@@ -134,6 +134,7 @@ const PREMIUM_FIELD_ALIASES = {
   "STATUS ATUAL": ["STATUS ATUAL"],
   "Parceiro": ["PARCEIRO", "NOME PARCEIRO", "NOME DO PARCEIRO", "CEDENTE", "PRODUTOR", "FORNECEDOR"],
   "Número do título": ["NUMERO DO TITULO", "N MERO DO T TULO", "NÚMERO DO TÍTULO", "N�MERO DO T�TULO"],
+  "Termo / NF": ["TERMO", "TERMO NF", "TERMO NUMERO DA NF", "NUMERO DA NF", "N MERO DA NF", "NUMERO NF", "NF", "NOTA FISCAL", "NOTA", "NUMERO NOTA FISCAL", "NUMERO DA NOTA", "NUMERO DA NOTA FISCAL", "N NOTA", "N NOTA FISCAL"],
   "Data de confirmação de abate": [
     "DATA DE CONFIRMACAO DE ABATE",
     "DATA DE CONFIRMA O DE ABATE",
@@ -303,6 +304,7 @@ function normalizePremiumCsvRecord(raw) {
     normalized[normalizeKey(key)] = value;
   });
   const title = String(premiumRowValue(normalized, "Número do título") || "").trim();
+  const term = String(premiumRowValue(normalized, "Termo / NF") || title).trim();
   const quantity = parsePtNumber(premiumRowValue(normalized, "Quantidade de animais"));
   const paymentAmount = parsePtNumber(premiumRowValue(normalized, "Valor Pago"));
   const pricePerHeadRaw = premiumRowValue(normalized, "Preço/cabeça");
@@ -316,8 +318,10 @@ function normalizePremiumCsvRecord(raw) {
     farm: String(premiumRowValue(normalized, "Fazenda") || "").trim(),
     lot: String(premiumRowValue(normalized, "Lote") || "").trim(),
     partner,
+    term,
+    termKey: normalizeKey(term || title),
     title,
-    titleKey: normalizePremiumTitle(title),
+    titleKey: normalizePremiumTitle(title || term),
     lastro: String(premiumRowValue(normalized, "Lastro") || "").trim(),
     status: String(premiumRowValue(normalized, "STATUS ATUAL") || "").trim(),
     statusKey: normalizePremiumStatus(premiumRowValue(normalized, "STATUS ATUAL")),
@@ -364,7 +368,7 @@ function premiumRecordsFromMatrix(matrix) {
       });
       return normalizePremiumCsvRecord(raw);
     })
-    .filter((row) => row.farm || row.title || row.lot);
+    .filter((row) => row.farm || row.term || row.title || row.lot);
 }
 
 function parsePremiumCsv(text) {
@@ -627,10 +631,11 @@ function premiumPaymentDateFromSelectedRows() {
 function premiumDeathCountByTitle() {
   const deaths = {};
   premiumState.rows
-    .filter((row) => row.titleKey)
+    .filter((row) => row.termKey || row.titleKey)
     .filter((row) => row.statusKey.includes("MORTE") || row.statusKey === "MORTO")
     .forEach((row) => {
-      deaths[row.titleKey] = (deaths[row.titleKey] || 0) + 1;
+      const key = row.termKey || row.titleKey;
+      deaths[key] = (deaths[key] || 0) + 1;
     });
   return deaths;
 }
@@ -638,20 +643,22 @@ function premiumDeathCountByTitle() {
 function premiumGroupRows() {
   const grouped = new Map();
   premiumSelectedAnimalRows().forEach((row) => {
+    const termKey = row.termKey || row.titleKey || "SEM TERMO";
     const key = [
       normalizeKey(row.farm || "SEM FAZENDA"),
-      row.titleKey || "SEM TITULO",
-      normalizeKey(row.lastro || "SEM LASTRO"),
-      normalizeKey(row.lot || "SEM LOTE")
+      termKey
     ].join("__");
     const current = grouped.get(key) || {
       key,
       farm: row.farm || "-",
+      term: row.term || row.title || "-",
+      termKey,
       lot: row.lot || "-",
       title: row.title || "-",
       titleKey: row.titleKey,
       lastros: new Set(),
       lots: new Set(),
+      titles: new Set(),
       partners: new Set(),
       paymentDates: new Set(),
       heads: 0,
@@ -669,6 +676,7 @@ function premiumGroupRows() {
     };
     current.lastros.add(row.lastro || "-");
     current.lots.add(row.lot || "-");
+    current.titles.add(row.title || "-");
     if (row.partner) current.partners.add(row.partner);
     if (row.paymentDate) current.paymentDates.add(row.paymentDate);
     const heads = Number(row.headCount || 1);
@@ -693,16 +701,18 @@ function premiumGroupRows() {
     grouped.set(key, current);
   });
   return Array.from(grouped.values()).sort((a, b) =>
-    `${a.farm}-${a.title}-${a.lot}`.localeCompare(`${b.farm}-${b.title}-${b.lot}`, "pt-BR")
+    `${a.farm}-${a.term}-${a.title}`.localeCompare(`${b.farm}-${b.term}-${b.title}`, "pt-BR")
   );
 }
 
 function premiumLotRows() {
   const grouped = new Map();
   premiumSelectedAnimalRows().forEach((row) => {
-    const key = `${row.farm}__${row.titleKey}__${row.lastro}__${row.lot}`;
+    const key = `${row.farm}__${row.termKey || row.titleKey}__${row.lastro}__${row.lot}`;
     const current = grouped.get(key) || {
       farm: row.farm,
+      term: row.term || row.title || "-",
+      termKey: row.termKey,
       title: row.title || "-",
       titleKey: row.titleKey,
       lastro: row.lastro || "-",
@@ -722,7 +732,7 @@ function premiumLotRows() {
     grouped.set(key, current);
   });
   return Array.from(grouped.values()).sort((a, b) =>
-    `${a.farm}-${a.title}-${a.lot}`.localeCompare(`${b.farm}-${b.title}-${b.lot}`, "pt-BR")
+    `${a.farm}-${a.term}-${a.lot}`.localeCompare(`${b.farm}-${b.term}-${b.lot}`, "pt-BR")
   );
 }
 
@@ -762,7 +772,7 @@ function premiumCalculatedRows() {
   const deathCounts = premiumDeathCountByTitle();
 
   return groups.map((group) => {
-    const defaults = premiumTermDefault(group.title);
+    const defaults = premiumTermDefault(group.term || group.title);
     const overrideKey = group.key;
     const issueDate = group.rows
       .map((row) => row.lotDate || row.entryDate)
@@ -775,7 +785,7 @@ function premiumCalculatedRows() {
     const days = Math.max(0, dateDiffDays(issueDate, premiumState.selectedDate));
     const periodRate = Math.pow(1 + dailyRate, days) - 1;
     const costPerHead = premiumNumberOverride(overrideKey, "costPerHead", group.acquisitionCostWeight ? reportCostPerHead : defaults?.costPerHead || 0);
-    const deaths = premiumNumberOverride(overrideKey, "deaths", Math.max(Number(defaults?.deaths || 0), Number(deathCounts[group.titleKey] || 0)));
+    const deaths = premiumNumberOverride(overrideKey, "deaths", Math.max(Number(defaults?.deaths || 0), Number(deathCounts[group.termKey] || deathCounts[group.titleKey] || 0)));
     const hasManualGta = premiumHasOverride(overrideKey, "gtaCost");
     const hasManualPayment = premiumHasOverride(overrideKey, "paymentAmount");
     const gtaCost = premiumNumberOverride(overrideKey, "gtaCost", 0);
@@ -802,7 +812,7 @@ function premiumCalculatedRows() {
     return {
       ...group,
       overrideKey,
-      displayTitle: defaults?.displayTitle || group.title,
+      displayTitle: group.term && group.term !== "-" ? group.term : defaults?.displayTitle || group.title,
       issueDate,
       paymentDate,
       paymentDatesLabel,
@@ -831,7 +841,8 @@ function premiumCalculatedRows() {
       amortization: roundMoney(revenue - premium),
       partnersLabel,
       lotsLabel: Array.from(group.lots).filter(Boolean).join(", "),
-      lastrosLabel: Array.from(group.lastros).filter(Boolean).join(", ")
+      lastrosLabel: Array.from(group.lastros).filter(Boolean).join(", "),
+      titlesLabel: Array.from(group.titles).filter(Boolean).join(", ")
     };
   });
 }
@@ -944,12 +955,13 @@ function premiumStatement(row) {
       <div class="premium-statement-head">
         <div>
           <strong>${escapeHtml(row.displayTitle)}</strong>
-          <span>Lote ${escapeHtml(row.lot || row.lotsLabel || "-")} · ${escapeHtml(row.lastrosLabel || "-")}</span>
+          <span>Lotes ${escapeHtml(row.lotsLabel || "-")} · Lastros ${escapeHtml(row.lastrosLabel || "-")}</span>
         </div>
         <b>${formatNumber(row.heads)} cab.</b>
       </div>
       <div class="statement-meta">
         <span>Parceiro ${escapeHtml(row.partnersLabel || "-")}</span>
+        <span>Titulo ${escapeHtml(row.titlesLabel || row.title || "-")}</span>
         <span>Data lote ${row.issueDate ? formatDate(row.issueDate) : "-"}</span>
         <span>${formatNumber(row.days)} dias</span>
         <span>${formatCurrency(row.pricePerHead, 2)}/cab.</span>
@@ -973,7 +985,7 @@ function premiumStatement(row) {
         ${premiumStatementLine("Premio", formatCurrency(row.premium, 2), { className: "is-result", valueClass: signedClass(row.premium) })}
         ${premiumStatementLine("Amortizacao", formatCurrency(row.amortization, 2), { className: "is-result" })}
       </div>
-      <div class="statement-foot">${escapeHtml(row.lotsLabel || "-")}</div>
+      <div class="statement-foot">Composicao: lotes ${escapeHtml(row.lotsLabel || "-")}</div>
     </article>
   `;
 }
@@ -1068,7 +1080,7 @@ function renderPremium() {
 
   nodes.memorySubtitle.textContent = rows.length
     ? `Abate ${dateLabel} - ${formatNumber(farmCount)} fazenda${farmCount === 1 ? "" : "s"}`
-    : "Agrupado por fazenda e lote";
+    : "Agrupado por fazenda e termo/NF";
 
   const missingCosts = rows.filter((row) => !row.costPerHead).length;
   const missingRevenue = rows.filter((row) => !row.paymentAmount).length;
@@ -1079,8 +1091,8 @@ function renderPremium() {
   const missingInputs = missingCosts + missingRevenue + missingFee + missingVp + missingPaymentDate + missingGta;
   nodes.kpis.innerHTML = [
     ["Abate", dateLabel, `${formatNumber(farmCount)} fazenda${farmCount === 1 ? "" : "s"}`],
-    ["Animais abatidos", formatNumber(totals.heads), `${formatNumber(rows.length)} lote${rows.length === 1 ? "" : "s"}`],
-    ["Valor pago", formatCurrency(totals.revenue, 2), pricePerHead ? `${formatCurrency(pricePerHead, 2)}/cabeca` : "Por lote"],
+    ["Animais abatidos", formatNumber(totals.heads), `${formatNumber(rows.length)} termo${rows.length === 1 ? "" : "s"}`],
+    ["Valor pago", formatCurrency(totals.revenue, 2), pricePerHead ? `${formatCurrency(pricePerHead, 2)}/cabeca` : "Por termo/NF"],
     ["VP sistema", totals.systemVpAtAbate ? formatCurrency(totals.systemVpAtAbate, 2) : "-", "Campo de bate do relatorio"],
     ["Dif. VP", totals.systemVpAtAbate ? formatCurrency(totals.vpDifference, 2) : "-", "Sistema menos motor"],
     ["Premio", formatCurrency(totals.premium, 2), "Receita menos custos"],
@@ -1105,7 +1117,7 @@ function renderPremium() {
       <tr>
         <td>${escapeHtml(row.farm)}</td>
         <td>${escapeHtml(row.partner || "-")}</td>
-        <td>${escapeHtml(row.title || "-")}</td>
+        <td>${escapeHtml(row.term || row.title || "-")}</td>
         <td>${escapeHtml(row.lastro || "-")}</td>
         <td>${escapeHtml(row.lot || "-")}</td>
         <td>${escapeHtml(paymentDates || "-")}</td>
