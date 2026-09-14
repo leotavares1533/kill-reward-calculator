@@ -209,7 +209,7 @@ main {
 
 .premium-kpis {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 14px;
 }
@@ -261,7 +261,7 @@ table {
 }
 
 .wide-table {
-  min-width: 1020px;
+  min-width: 1280px;
 }
 
 .premium-memory-table {
@@ -381,6 +381,14 @@ table {
   border-radius: 10px;
   background: rgba(13, 57, 71, 0.07);
   padding: 7px 8px;
+}
+
+.statement-line.is-check {
+  margin: 3px -2px;
+  border-bottom: 0;
+  border-radius: 10px;
+  background: rgba(44, 96, 119, 0.08);
+  padding: 6px 8px;
 }
 
 .statement-line.is-editable {
@@ -515,8 +523,8 @@ td strong {
 }
 
 @page {
-  size: A4 portrait;
-  margin: 8mm;
+  size: A4 landscape;
+  margin: 6mm;
 }
 
 @media print {
@@ -544,8 +552,8 @@ td strong {
   }
 
   .topbar {
-    padding: 8pt 10pt;
-    border-radius: 10pt;
+    padding: 6pt 8pt;
+    border-radius: 8pt;
   }
 
   .brand-mark {
@@ -555,7 +563,7 @@ td strong {
   }
 
   h1 {
-    font-size: 18pt;
+    font-size: 15pt;
   }
 
   h2 {
@@ -568,9 +576,9 @@ td strong {
 
   .panel,
   .table-card {
-    padding: 7pt;
-    border-radius: 8pt;
-    margin-bottom: 7pt;
+    padding: 5pt;
+    border-radius: 7pt;
+    margin-bottom: 5pt;
   }
 
   .premium-controls {
@@ -621,8 +629,8 @@ td strong {
   }
 
   .premium-memory-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 5pt;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4pt;
   }
 
   .premium-statement {
@@ -656,27 +664,28 @@ td strong {
   }
 
   .statement-lines {
-    padding: 3pt 5pt 5pt;
+    padding: 2pt 4pt 4pt;
   }
 
   .statement-line {
-    min-height: 13pt;
-    gap: 4pt;
-    font-size: 5.8pt;
+    min-height: 10pt;
+    gap: 3pt;
+    font-size: 5.2pt;
   }
 
   .statement-line small {
-    font-size: 5pt;
+    font-size: 4.6pt;
   }
 
   .statement-line strong {
-    font-size: 5.8pt;
+    font-size: 5.2pt;
   }
 
-  .statement-line.is-result {
-    margin-top: 2pt;
+  .statement-line.is-result,
+  .statement-line.is-check {
+    margin-top: 1.5pt;
     border-radius: 4pt;
-    padding: 3pt 4pt;
+    padding: 2pt 3pt;
   }
 
   .statement-foot,
