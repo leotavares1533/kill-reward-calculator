@@ -38,24 +38,8 @@
             <input id="premium-file-input" type="file" accept=".csv,.txt,.xlsx,.xls">
           </label>
           <label>
-            <span>Fazenda</span>
-            <select id="premium-farm-filter"></select>
-          </label>
-          <label>
             <span>Data do abate</span>
             <select id="premium-date-filter"></select>
-          </label>
-          <label>
-            <span>Data de pagamento</span>
-            <input id="premium-payment-date-input" type="date">
-          </label>
-          <label>
-            <span>Valor total pago</span>
-            <input id="premium-payment-input" type="number" step="0.01" min="0" placeholder="0,00">
-          </label>
-          <label>
-            <span>Custo GTA</span>
-            <input id="premium-gta-input" type="number" step="0.01" min="0" value="442.61">
           </label>
         </div>
       </section>
@@ -66,10 +50,10 @@
         <div class="card-head">
           <div>
             <h3>Memoria de calculo</h3>
-            <span id="premium-memory-subtitle">Agrupado por titulo e data de abate</span>
+            <span id="premium-memory-subtitle">Agrupado por fazenda e lote</span>
           </div>
         </div>
-        <div class="premium-memory-grid" id="premium-memory-table"></div>
+        <div class="premium-memory-stack" id="premium-memory-table"></div>
       </section>
 
       <section class="table-card">

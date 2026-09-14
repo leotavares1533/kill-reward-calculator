@@ -580,7 +580,7 @@ function premiumFarmOptions() {
 }
 
 function premiumRowReferenceDate(row) {
-  return row.abateDate || row.paymentDate || "";
+  return row.abateDate || "";
 }
 
 function premiumRowIsAbated(row) {
@@ -591,7 +591,6 @@ function premiumRowIsAbated(row) {
 
 function premiumDateOptions() {
   return Array.from(new Set(premiumState.rows
-    .filter((row) => row.farm === premiumState.selectedFarm)
     .filter(premiumRowIsAbated)
     .map(premiumRowReferenceDate)
     .filter(Boolean)))
@@ -610,9 +609,8 @@ function applyPremiumDateDefaultPrice() {
 }
 
 function premiumSelectedAnimalRows() {
-  if (!premiumState.selectedFarm || !premiumState.selectedDate) return [];
+  if (!premiumState.selectedDate) return [];
   return premiumState.rows.filter((row) =>
-    row.farm === premiumState.selectedFarm &&
     premiumRowReferenceDate(row) === premiumState.selectedDate &&
     premiumRowIsAbated(row)
   );
@@ -629,7 +627,6 @@ function premiumPaymentDateFromSelectedRows() {
 function premiumDeathCountByTitle() {
   const deaths = {};
   premiumState.rows
-    .filter((row) => row.farm === premiumState.selectedFarm)
     .filter((row) => row.titleKey)
     .filter((row) => row.statusKey.includes("MORTE") || row.statusKey === "MORTO")
     .forEach((row) => {
@@ -641,9 +638,16 @@ function premiumDeathCountByTitle() {
 function premiumGroupRows() {
   const grouped = new Map();
   premiumSelectedAnimalRows().forEach((row) => {
-    const key = row.titleKey || `SEM TITULO ${row.lastro || row.lot}`;
+    const key = [
+      normalizeKey(row.farm || "SEM FAZENDA"),
+      row.titleKey || "SEM TITULO",
+      normalizeKey(row.lastro || "SEM LASTRO"),
+      normalizeKey(row.lot || "SEM LOTE")
+    ].join("__");
     const current = grouped.get(key) || {
       key,
+      farm: row.farm || "-",
+      lot: row.lot || "-",
       title: row.title || "-",
       titleKey: row.titleKey,
       lastros: new Set(),
@@ -688,7 +692,9 @@ function premiumGroupRows() {
     current.rows.push(row);
     grouped.set(key, current);
   });
-  return Array.from(grouped.values()).sort((a, b) => a.title.localeCompare(b.title, "pt-BR"));
+  return Array.from(grouped.values()).sort((a, b) =>
+    `${a.farm}-${a.title}-${a.lot}`.localeCompare(`${b.farm}-${b.title}-${b.lot}`, "pt-BR")
+  );
 }
 
 function premiumLotRows() {
@@ -716,7 +722,7 @@ function premiumLotRows() {
     grouped.set(key, current);
   });
   return Array.from(grouped.values()).sort((a, b) =>
-    `${a.title}-${a.lot}`.localeCompare(`${b.title}-${b.lot}`, "pt-BR")
+    `${a.farm}-${a.title}-${a.lot}`.localeCompare(`${b.farm}-${b.title}-${b.lot}`, "pt-BR")
   );
 }
 
@@ -742,49 +748,46 @@ function premiumNumberOverride(titleKey, field, fallback) {
   return Number.isFinite(value) ? value : fallback;
 }
 
+function premiumHasOverride(rowKey, field) {
+  return Object.prototype.hasOwnProperty.call(premiumState.rowOverrides[rowKey] || {}, field);
+}
+
+function premiumTextOverride(rowKey, field, fallback = "") {
+  return premiumHasOverride(rowKey, field) ? String(premiumState.rowOverrides[rowKey][field] || "") : fallback;
+}
+
 function premiumCalculatedRows() {
   const groups = premiumGroupRows();
-  const totalHeads = groups.reduce((sum, row) => sum + row.heads, 0);
-  const manualPaymentTotal = Number(premiumState.paymentAmount || 0) > 0 ? roundMoney(premiumState.paymentAmount) : 0;
-  const manualPaymentPerHead = manualPaymentTotal > 0 && totalHeads > 0 ? manualPaymentTotal / totalHeads : 0;
-  let remainingManualPayment = manualPaymentTotal;
-  const fallbackPricePerHead = manualPaymentPerHead || (
-    Number(premiumState.pricePerHead || 0) > 0
-      ? Number(premiumState.pricePerHead || 0)
-      : premiumPriceFromRows(groups) > 0
-        ? premiumPriceFromRows(groups)
-        : 0
-  );
+  const fallbackPricePerHead = premiumPriceFromRows(groups);
   const deathCounts = premiumDeathCountByTitle();
 
-  return groups.map((group, index) => {
+  return groups.map((group) => {
     const defaults = premiumTermDefault(group.title);
-    const titleKey = group.titleKey || group.key;
+    const overrideKey = group.key;
     const issueDate = group.rows
       .map((row) => row.lotDate || row.entryDate)
       .filter(Boolean)
       .sort()[0] || defaults?.issueDate || premiumState.selectedDate;
     const reportCostPerHead = premiumWeightedAverage(group.weightedAcquisitionCost, group.acquisitionCostWeight);
     const reportAssignmentRate = premiumWeightedAverage(group.weightedAssignmentRate, group.assignmentRateWeight);
-    const monthlyRate = premiumNumberOverride(titleKey, "monthlyRate", group.assignmentRateWeight ? reportAssignmentRate : defaults?.monthlyRate || premiumState.monthlyRate || PREMIUM_DEFAULT_MONTHLY_RATE);
+    const monthlyRate = premiumNumberOverride(overrideKey, "monthlyRate", group.assignmentRateWeight ? reportAssignmentRate : defaults?.monthlyRate || premiumState.monthlyRate || PREMIUM_DEFAULT_MONTHLY_RATE);
     const dailyRate = Math.pow(1 + monthlyRate, 1 / 30) - 1;
     const days = Math.max(0, dateDiffDays(issueDate, premiumState.selectedDate));
     const periodRate = Math.pow(1 + dailyRate, days) - 1;
-    const costPerHead = premiumNumberOverride(titleKey, "costPerHead", group.acquisitionCostWeight ? reportCostPerHead : defaults?.costPerHead || 0);
-    const deaths = premiumNumberOverride(titleKey, "deaths", Math.max(Number(defaults?.deaths || 0), Number(deathCounts[titleKey] || 0)));
-    const gtaCost = premiumNumberOverride(titleKey, "gtaCost", premiumState.gtaCost);
-    const monitoringFeeRate = premiumNumberOverride(titleKey, "monitoringFeeRate", group.reportFeeRate ?? 0);
+    const costPerHead = premiumNumberOverride(overrideKey, "costPerHead", group.acquisitionCostWeight ? reportCostPerHead : defaults?.costPerHead || 0);
+    const deaths = premiumNumberOverride(overrideKey, "deaths", Math.max(Number(defaults?.deaths || 0), Number(deathCounts[group.titleKey] || 0)));
+    const hasManualGta = premiumHasOverride(overrideKey, "gtaCost");
+    const hasManualPayment = premiumHasOverride(overrideKey, "paymentAmount");
+    const gtaCost = premiumNumberOverride(overrideKey, "gtaCost", 0);
+    const monitoringFeeRate = premiumNumberOverride(overrideKey, "monitoringFeeRate", group.reportFeeRate ?? 0);
     const reportPricePerHead = premiumWeightedAverage(group.weightedPricePerHead, group.priceWeight);
-    const pricePerHead = reportPricePerHead || (group.paymentAmount && group.heads ? group.paymentAmount / group.heads : 0) || fallbackPricePerHead;
+    const paymentAmount = premiumNumberOverride(overrideKey, "paymentAmount", group.paymentAmount || 0);
+    const pricePerHead = reportPricePerHead || (paymentAmount && group.heads ? paymentAmount / group.heads : 0) || fallbackPricePerHead;
     const grossPrincipal = roundMoney(group.heads * costPerHead);
     const calculatedVpAtAbate = roundMoney(grossPrincipal * (1 + periodRate));
     const systemVpAtAbate = roundMoney(group.systemVpAtAbate);
     const vpDifference = systemVpAtAbate ? roundMoney(systemVpAtAbate - calculatedVpAtAbate) : 0;
-    let revenue = roundMoney(group.paymentAmount > 0 ? group.paymentAmount : group.heads * pricePerHead);
-    if (manualPaymentPerHead) {
-      revenue = index === groups.length - 1 ? remainingManualPayment : roundMoney(group.heads * manualPaymentPerHead);
-      remainingManualPayment = roundMoney(remainingManualPayment - revenue);
-    }
+    const revenue = roundMoney(paymentAmount > 0 ? paymentAmount : group.heads * pricePerHead);
     const principal = roundMoney(-grossPrincipal);
     const operationCost = roundMoney(-(calculatedVpAtAbate - grossPrincipal));
     const gta = roundMoney(-gtaCost);
@@ -794,12 +797,14 @@ function premiumCalculatedRows() {
     const premium = roundMoney(revenue + principal + operationCost + gta + tags + monitoringFee + deathCost);
     const partnersLabel = Array.from(group.partners).filter(Boolean).join(", ");
     const reportPaymentDatesLabel = Array.from(group.paymentDates).filter(Boolean).sort().map(formatDate).join(", ");
-    const paymentDatesLabel = premiumState.paymentDate ? formatDate(premiumState.paymentDate) : reportPaymentDatesLabel;
+    const paymentDate = premiumTextOverride(overrideKey, "paymentDate", Array.from(group.paymentDates).filter(Boolean).sort()[0] || "");
+    const paymentDatesLabel = paymentDate ? formatDate(paymentDate) : reportPaymentDatesLabel;
     return {
       ...group,
-      titleKey,
+      overrideKey,
       displayTitle: defaults?.displayTitle || group.title,
       issueDate,
+      paymentDate,
       paymentDatesLabel,
       days,
       monthlyRate,
@@ -808,6 +813,9 @@ function premiumCalculatedRows() {
       costPerHead,
       deaths,
       gtaCost,
+      hasManualGta,
+      hasManualPayment,
+      paymentAmount,
       revenue,
       principal,
       operationCost,
@@ -869,9 +877,15 @@ function signedClass(value) {
   return "";
 }
 
-function premiumInputCell(row, field, value, step = "0.01") {
+function premiumInputCell(row, field, value, step = "0.01", blankWhenZero = false) {
   const digits = step === "1" ? 0 : 2;
-  return `<input class="inline-number premium-row-input" data-premium-title="${escapeHtml(row.titleKey)}" data-premium-field="${field}" type="number" step="${step}" value="${Number(value || 0).toFixed(digits)}">`;
+  const numericValue = Number(value || 0);
+  const inputValue = blankWhenZero && !numericValue ? "" : numericValue.toFixed(digits);
+  return `<input class="inline-number premium-row-input" data-premium-key="${escapeHtml(row.overrideKey)}" data-premium-field="${field}" type="number" step="${step}" value="${inputValue}">`;
+}
+
+function premiumDateInputCell(row, field, value) {
+  return `<input class="inline-date premium-row-input" data-premium-key="${escapeHtml(row.overrideKey)}" data-premium-field="${field}" type="date" value="${escapeHtml(value || "")}">`;
 }
 
 function premiumStatementLine(label, value, options = {}) {
@@ -899,6 +913,30 @@ function premiumStatementInputLine(row, label, field, value, step = "0.01", note
   `;
 }
 
+function premiumStatementOptionalInputLine(row, label, field, value, step = "0.01", note = "", blankWhenZero = true) {
+  return `
+    <div class="statement-line is-editable">
+      <span>
+        ${escapeHtml(label)}
+        ${note ? `<small>${escapeHtml(note)}</small>` : ""}
+      </span>
+      ${premiumInputCell(row, field, value, step, blankWhenZero)}
+    </div>
+  `;
+}
+
+function premiumStatementDateInputLine(row, label, field, value, note = "") {
+  return `
+    <div class="statement-line is-editable">
+      <span>
+        ${escapeHtml(label)}
+        ${note ? `<small>${escapeHtml(note)}</small>` : ""}
+      </span>
+      ${premiumDateInputCell(row, field, value)}
+    </div>
+  `;
+}
+
 function premiumStatement(row) {
   const vpMatchClass = Math.abs(row.vpDifference || 0) <= 1 ? "positive" : signedClass(row.vpDifference);
   return `
@@ -906,20 +944,22 @@ function premiumStatement(row) {
       <div class="premium-statement-head">
         <div>
           <strong>${escapeHtml(row.displayTitle)}</strong>
-          <span>${escapeHtml(row.lastrosLabel || "-")}</span>
+          <span>Lote ${escapeHtml(row.lot || row.lotsLabel || "-")} · ${escapeHtml(row.lastrosLabel || "-")}</span>
         </div>
         <b>${formatNumber(row.heads)} cab.</b>
       </div>
       <div class="statement-meta">
         <span>Parceiro ${escapeHtml(row.partnersLabel || "-")}</span>
-        <span>Lote ${row.issueDate ? formatDate(row.issueDate) : "-"}</span>
-        <span>Pgto ${escapeHtml(row.paymentDatesLabel || "-")}</span>
+        <span>Data lote ${row.issueDate ? formatDate(row.issueDate) : "-"}</span>
         <span>${formatNumber(row.days)} dias</span>
         <span>${formatCurrency(row.pricePerHead, 2)}/cab.</span>
       </div>
       <div class="statement-lines">
+        ${premiumStatementDateInputLine(row, "Data pagamento", "paymentDate", row.paymentDate)}
+        ${premiumStatementOptionalInputLine(row, "Valor pago", "paymentAmount", row.paymentAmount, "0.01", "", !row.hasManualPayment && !row.paymentAmount)}
+        ${premiumStatementOptionalInputLine(row, "Custo GTA", "gtaCost", row.gtaCost, "0.01", "", !row.hasManualGta)}
         ${premiumStatementLine("Receita total", formatCurrency(row.revenue, 2), { className: "is-result", valueClass: "positive" })}
-        ${premiumStatementInputLine(row, "Valor aquis./cabeca", "costPerHead", row.costPerHead)}
+        ${premiumStatementLine("Valor aquis./cabeca", row.costPerHead ? formatCurrency(row.costPerHead, 2) : "-", { valueClass: row.costPerHead ? "" : "negative" })}
         ${premiumStatementLine("Taxa de cessao", `${formatNumber(row.monthlyRate * 100, 4)}% a.m.`, { note: `periodo ${formatNumber(row.periodRate * 100, 2)}%` })}
         ${premiumStatementLine("Principal", formatCurrency(row.principal, 2), { valueClass: "negative", note: "quantidade x aquisicao/cabeca" })}
         ${premiumStatementLine("Custo da operacao", formatCurrency(row.operationCost, 2), { valueClass: "negative" })}
@@ -928,8 +968,7 @@ function premiumStatement(row) {
         ${premiumStatementLine("Diferenca VP", row.systemVpAtAbate ? formatCurrency(row.vpDifference, 2) : "-", { className: "is-check", valueClass: row.systemVpAtAbate ? vpMatchClass : "negative" })}
         ${premiumStatementInputLine(row, "Mortes", "deaths", row.deaths, "1")}
         ${premiumStatementLine("Custo mortes", formatCurrency(row.deathCost, 2), { valueClass: "negative" })}
-        ${premiumStatementInputLine(row, "Custo GTA", "gtaCost", row.gtaCost)}
-        ${premiumStatementLine("Brincos", formatCurrency(row.tags, 2), { valueClass: "negative" })}
+        ${premiumStatementLine("Brincos", formatCurrency(row.tags, 2), { valueClass: "negative", note: "R$ 2,50 fixo por cabeca" })}
         ${premiumStatementLine("Fee monitoramento", formatCurrency(row.monitoringFee, 2), { valueClass: "negative", note: `${formatNumber(row.monitoringFeeRate * 100, 2)}% parceiro` })}
         ${premiumStatementLine("Premio", formatCurrency(row.premium, 2), { className: "is-result", valueClass: signedClass(row.premium) })}
         ${premiumStatementLine("Amortizacao", formatCurrency(row.amortization, 2), { className: "is-result" })}
@@ -968,20 +1007,38 @@ function premiumTotalStatement(totals) {
   `;
 }
 
+function premiumFarmSections(rows) {
+  const grouped = rows.reduce((acc, row) => {
+    const farm = row.farm || "Sem fazenda";
+    acc[farm] = acc[farm] || [];
+    acc[farm].push(row);
+    return acc;
+  }, {});
+  return Object.entries(grouped)
+    .sort(([a], [b]) => a.localeCompare(b, "pt-BR"))
+    .map(([farm, farmRows]) => {
+      const totals = premiumTotals(farmRows);
+      return `
+        <section class="premium-farm-group">
+          <div class="premium-farm-head">
+            <strong>${escapeHtml(farm)}</strong>
+            <span>${formatNumber(totals.heads)} cabecas · ${formatCurrency(totals.revenue, 2)} pagos · ${formatCurrency(totals.premium, 2)} premio</span>
+          </div>
+          <div class="premium-memory-grid">
+            ${farmRows.map(premiumStatement).join("")}
+          </div>
+        </section>
+      `;
+    })
+    .join("");
+}
+
 function renderPremiumFilters() {
-  const farms = premiumFarmOptions();
-  if (!premiumState.selectedFarm || !farms.includes(premiumState.selectedFarm)) {
-    premiumState.selectedFarm = farms[0] || "";
-  }
   const dates = premiumDateOptions();
   if (!premiumState.selectedDate || !dates.includes(premiumState.selectedDate)) {
     premiumState.selectedDate = dates[0] || "";
     applyPremiumDateDefaultPrice();
   }
-  nodes.farmFilter.innerHTML = farms.length
-    ? farms.map((farm) => `<option value="${escapeHtml(farm)}">${escapeHtml(farm)}</option>`).join("")
-    : `<option value="">Carregue um CSV</option>`;
-  nodes.farmFilter.value = premiumState.selectedFarm;
   nodes.dateFilter.innerHTML = dates.length
     ? dates.map((dateKey) => `<option value="${dateKey}">${formatDate(dateKey)}</option>`).join("")
     : `<option value="">Sem abate</option>`;
@@ -990,10 +1047,6 @@ function renderPremiumFilters() {
 
 function renderPremium() {
   renderPremiumFilters();
-  if (!premiumState.paymentDateTouched) {
-    premiumState.paymentDate = premiumPaymentDateFromSelectedRows();
-  }
-  syncInput(nodes.paymentDateInput, premiumState.paymentDate || "");
   syncInput(nodes.priceHeadInput, premiumState.pricePerHead ? premiumState.pricePerHead.toFixed(2) : "");
   syncInput(nodes.monthlyRateInput, (premiumState.monthlyRate * 100).toFixed(2));
   syncInput(nodes.gtaInput, premiumState.gtaCost.toFixed(2));
@@ -1004,11 +1057,8 @@ function renderPremium() {
   const totals = premiumTotals(rows);
   const sourceLabel = premiumState.fileName ? premiumState.fileName : "sem arquivo";
   const dateLabel = premiumState.selectedDate ? formatDate(premiumState.selectedDate) : "-";
-  const paymentDateLabel = premiumState.paymentDate ? formatDate(premiumState.paymentDate) : "-";
   const pricePerHead = totals.heads ? totals.revenue / totals.heads : rows[0]?.pricePerHead || 0;
-  const paymentDisplayAmount = premiumState.paymentTouched ? premiumState.paymentAmount : totals.revenue;
-
-  syncInput(nodes.paymentInput, paymentDisplayAmount ? paymentDisplayAmount.toFixed(2) : "");
+  const farmCount = new Set(rows.map((row) => row.farm).filter(Boolean)).size;
 
   nodes.status.textContent = premiumState.rows.length
     ? `${formatNumber(premiumState.rows.length)} registros carregados - ${sourceLabel}`
@@ -1016,22 +1066,21 @@ function renderPremium() {
       ? `Arquivo lido - nao encontrei a tabela de animais em ${sourceLabel}`
       : "Aguardando arquivo";
 
-  nodes.memorySubtitle.textContent = premiumState.selectedFarm
-    ? `${premiumState.selectedFarm} - abate ${dateLabel}`
-    : "Agrupado por titulo e data de abate";
+  nodes.memorySubtitle.textContent = rows.length
+    ? `Abate ${dateLabel} - ${formatNumber(farmCount)} fazenda${farmCount === 1 ? "" : "s"}`
+    : "Agrupado por fazenda e lote";
 
   const missingCosts = rows.filter((row) => !row.costPerHead).length;
-  const missingRevenue = rows.filter((row) => !row.revenue).length;
+  const missingRevenue = rows.filter((row) => !row.paymentAmount).length;
   const missingFee = rows.filter((row) => row.reportFeeRate === null || row.reportFeeRate === undefined).length;
   const missingVp = rows.filter((row) => !row.systemVpAtAbate).length;
-  const hasReportPaymentDate = premiumSelectedAnimalRows().some((row) => row.paymentDate);
-  const missingPaymentDate = rows.length && !premiumState.paymentDate && !hasReportPaymentDate ? 1 : 0;
-  const missingInputs = missingCosts + missingRevenue + missingFee + missingVp + missingPaymentDate;
+  const missingPaymentDate = rows.filter((row) => !row.paymentDate).length;
+  const missingGta = rows.filter((row) => !row.hasManualGta).length;
+  const missingInputs = missingCosts + missingRevenue + missingFee + missingVp + missingPaymentDate + missingGta;
   nodes.kpis.innerHTML = [
-    ["Abate", dateLabel, premiumState.selectedFarm || "-"],
-    ["Pagamento", paymentDateLabel, premiumState.paymentDateTouched ? "Preenchido manualmente" : "Relatorio ou manual"],
-    ["Animais abatidos", formatNumber(totals.heads), `${formatNumber(rows.length)} titulo${rows.length === 1 ? "" : "s"}`],
-    ["Valor pago", formatCurrency(totals.revenue, 2), pricePerHead ? `${formatCurrency(pricePerHead, 2)}/cabeca` : "Relatorio ou manual"],
+    ["Abate", dateLabel, `${formatNumber(farmCount)} fazenda${farmCount === 1 ? "" : "s"}`],
+    ["Animais abatidos", formatNumber(totals.heads), `${formatNumber(rows.length)} lote${rows.length === 1 ? "" : "s"}`],
+    ["Valor pago", formatCurrency(totals.revenue, 2), pricePerHead ? `${formatCurrency(pricePerHead, 2)}/cabeca` : "Por lote"],
     ["VP sistema", totals.systemVpAtAbate ? formatCurrency(totals.systemVpAtAbate, 2) : "-", "Campo de bate do relatorio"],
     ["Dif. VP", totals.systemVpAtAbate ? formatCurrency(totals.vpDifference, 2) : "-", "Sistema menos motor"],
     ["Premio", formatCurrency(totals.premium, 2), "Receita menos custos"],
@@ -1046,7 +1095,7 @@ function renderPremium() {
   `).join("");
 
   nodes.memoryTable.innerHTML = rows.length
-    ? rows.map(premiumStatement).join("") + premiumTotalStatement(totals)
+    ? premiumFarmSections(rows) + premiumTotalStatement(totals)
     : `<div class="premium-empty">${premiumState.rows.length ? "Sem animais abatidos para os filtros selecionados" : "Carregue o relatorio do sistema para calcular"}</div>`;
 
   nodes.lotTable.innerHTML = lotRows.length ? lotRows.map((row) => {
@@ -1090,8 +1139,6 @@ nodes.fileInput.addEventListener("change", async (event) => {
     premiumState.paymentTouched = false;
     premiumState.priceTouched = false;
     premiumState.priceByDate = { ...PREMIUM_EXAMPLE_PRICE_BY_DATE, ...(parsed.priceByDate || {}) };
-    const farms = premiumFarmOptions();
-    premiumState.selectedFarm = farms[0] || "";
     const dates = premiumDateOptions();
     premiumState.selectedDate = dates[0] || "";
     applyPremiumDateDefaultPrice();
@@ -1101,42 +1148,11 @@ nodes.fileInput.addEventListener("change", async (event) => {
   }
 });
 
-nodes.farmFilter.addEventListener("change", (event) => {
-  premiumState.selectedFarm = event.target.value;
-  premiumState.selectedDate = "";
-  premiumState.paymentDate = "";
-  premiumState.paymentDateTouched = false;
-  applyPremiumDateDefaultPrice();
-  renderPremium();
-});
-
 nodes.dateFilter.addEventListener("change", (event) => {
   premiumState.selectedDate = event.target.value;
-  premiumState.paymentDate = "";
-  premiumState.paymentDateTouched = false;
   applyPremiumDateDefaultPrice();
   renderPremium();
 });
-
-if (nodes.paymentDateInput) {
-  nodes.paymentDateInput.addEventListener("input", (event) => {
-    premiumState.paymentDate = event.target.value;
-    premiumState.paymentDateTouched = true;
-    renderPremium();
-  });
-}
-
-if (nodes.paymentInput) {
-  nodes.paymentInput.addEventListener("input", (event) => {
-    premiumState.paymentAmount = parsePtNumber(event.target.value);
-    premiumState.paymentTouched = true;
-    if (premiumState.paymentAmount > 0) {
-      premiumState.pricePerHead = 0;
-      premiumState.priceTouched = false;
-    }
-    renderPremium();
-  });
-}
 
 if (nodes.priceHeadInput) {
   nodes.priceHeadInput.addEventListener("input", (event) => {
@@ -1163,14 +1179,24 @@ if (nodes.priceHeadInput) {
 });
 
 nodes.memoryTable.addEventListener("change", (event) => {
-  const input = event.target.closest("[data-premium-title][data-premium-field]");
+  const input = event.target.closest("[data-premium-key][data-premium-field]");
   if (!input) return;
-  const title = input.dataset.premiumTitle;
+  const rowKey = input.dataset.premiumKey;
   const field = input.dataset.premiumField;
-  premiumState.rowOverrides[title] = {
-    ...(premiumState.rowOverrides[title] || {}),
-    [field]: parsePtNumber(input.value)
+  const nextValue = input.type === "date"
+    ? input.value
+    : input.value === ""
+      ? ""
+      : parsePtNumber(input.value);
+  premiumState.rowOverrides[rowKey] = {
+    ...(premiumState.rowOverrides[rowKey] || {})
   };
+  if (nextValue === "") {
+    delete premiumState.rowOverrides[rowKey][field];
+  } else {
+    premiumState.rowOverrides[rowKey][field] = nextValue;
+  }
+  if (!Object.keys(premiumState.rowOverrides[rowKey]).length) delete premiumState.rowOverrides[rowKey];
   renderPremium();
 });
 

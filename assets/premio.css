@@ -176,7 +176,7 @@ main {
 
 .premium-controls {
   display: grid;
-  grid-template-columns: minmax(230px, 1.35fr) repeat(5, minmax(130px, 1fr));
+  grid-template-columns: minmax(260px, 1.35fr) minmax(160px, 0.65fr);
   gap: 10px;
 }
 
@@ -268,10 +268,39 @@ table {
   min-width: 1660px;
 }
 
+.premium-memory-stack {
+  display: grid;
+  gap: 14px;
+}
+
 .premium-memory-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
   gap: 12px;
+}
+
+.premium-farm-group {
+  display: grid;
+  gap: 10px;
+}
+
+.premium-farm-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(16, 32, 48, 0.1);
+  padding-bottom: 7px;
+}
+
+.premium-farm-head strong {
+  font-size: 0.9rem;
+}
+
+.premium-farm-head span {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 850;
 }
 
 .premium-statement {
@@ -468,6 +497,18 @@ td strong {
   font-weight: 850;
 }
 
+.inline-date {
+  width: 132px;
+  min-height: 28px;
+  border: 1px solid rgba(16, 32, 48, 0.16);
+  border-radius: 8px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.86);
+  padding: 0 7px;
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
 .positive {
   color: var(--green);
 }
@@ -582,7 +623,7 @@ td strong {
   }
 
   .premium-controls {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 4pt;
   }
 
@@ -592,7 +633,8 @@ td strong {
 
   .premium-controls input,
   .premium-controls select,
-  .inline-number {
+  .inline-number,
+  .inline-date {
     min-height: 16pt;
     border-radius: 4pt;
     padding: 0 4pt;
@@ -626,6 +668,27 @@ td strong {
   .card-head span,
   .cell-note {
     font-size: 5.8pt;
+  }
+
+  .premium-memory-stack {
+    gap: 5pt;
+  }
+
+  .premium-farm-group {
+    gap: 4pt;
+  }
+
+  .premium-farm-head {
+    gap: 4pt;
+    padding-bottom: 3pt;
+  }
+
+  .premium-farm-head strong {
+    font-size: 6.5pt;
+  }
+
+  .premium-farm-head span {
+    font-size: 5.3pt;
   }
 
   .premium-memory-grid {
@@ -715,7 +778,12 @@ td strong {
     font-size: 5.3pt;
   }
 
-  .inline-number {
+  .inline-number,
+  .inline-date {
     width: 40pt;
+  }
+
+  .inline-date {
+    width: 54pt;
   }
 }
