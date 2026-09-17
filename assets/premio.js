@@ -1010,8 +1010,10 @@ function signedClass(value) {
 function premiumInputCell(row, field, value, step = "0.01", blankWhenZero = false) {
   const digits = step === "1" ? 0 : 2;
   const numericValue = Number(value || 0);
-  const inputValue = blankWhenZero && !numericValue ? "" : numericValue.toFixed(digits);
-  return `<input class="inline-number premium-row-input" data-premium-key="${escapeHtml(row.overrideKey)}" data-premium-field="${field}" type="number" step="${step}" value="${inputValue}">`;
+  const inputValue = blankWhenZero && !numericValue ? "" : formatNumber(numericValue, digits);
+  const inputMode = digits ? "decimal" : "numeric";
+  const mask = digits ? "money" : "integer";
+  return `<input class="inline-number premium-row-input" data-premium-key="${escapeHtml(row.overrideKey)}" data-premium-field="${field}" data-premium-mask="${mask}" inputmode="${inputMode}" type="text" value="${inputValue}">`;
 }
 
 function premiumDateInputCell(row, field, value) {
@@ -1067,6 +1069,45 @@ function premiumStatementDateInputLine(row, label, field, value, note = "") {
   `;
 }
 
+function premiumInputNumberFromDigits(input) {
+  const digitsOnly = String(input.value || "").replace(/\D/g, "");
+  if (!digitsOnly) return "";
+  const number = Number(digitsOnly);
+  if (!Number.isFinite(number)) return "";
+  return input.dataset.premiumMask === "money" ? number / 100 : number;
+}
+
+function maskPremiumNumberInput(input) {
+  const nextValue = premiumInputNumberFromDigits(input);
+  if (nextValue === "") {
+    input.value = "";
+    return "";
+  }
+  const digits = input.dataset.premiumMask === "money" ? 2 : 0;
+  input.value = formatNumber(nextValue, digits);
+  input.setSelectionRange(input.value.length, input.value.length);
+  return nextValue;
+}
+
+function savePremiumRowInput(input) {
+  const rowKey = input.dataset.premiumKey;
+  const field = input.dataset.premiumField;
+  const nextValue = input.type === "date"
+    ? input.value
+    : input.value === ""
+      ? ""
+      : parsePtNumber(input.value);
+  premiumState.rowOverrides[rowKey] = {
+    ...(premiumState.rowOverrides[rowKey] || {})
+  };
+  if (nextValue === "") {
+    delete premiumState.rowOverrides[rowKey][field];
+  } else {
+    premiumState.rowOverrides[rowKey][field] = nextValue;
+  }
+  if (!Object.keys(premiumState.rowOverrides[rowKey]).length) delete premiumState.rowOverrides[rowKey];
+}
+
 function premiumStatement(row) {
   const vpMatchClass = Math.abs(row.vpDifference || 0) <= 1 ? "positive" : signedClass(row.vpDifference);
   return `
@@ -1097,7 +1138,7 @@ function premiumStatement(row) {
         ${premiumStatementLine("VP calculado no abate", formatCurrency(row.calculatedVpAtAbate, 2), { note: "principal atualizado pela taxa de cessao" })}
         ${premiumStatementLine("VP sistema no abate", row.systemVpAtAbate ? formatCurrency(row.systemVpAtAbate, 2) : "-", { valueClass: row.systemVpAtAbate ? "" : "negative" })}
         ${premiumStatementLine("Diferenca VP", row.systemVpAtAbate ? formatCurrency(row.vpDifference, 2) : "-", { className: "is-check", valueClass: row.systemVpAtAbate ? vpMatchClass : "negative" })}
-        ${premiumStatementInputLine(row, "Mortes", "deaths", row.deaths, "1")}
+        ${premiumStatementOptionalInputLine(row, "Mortes", "deaths", row.deaths, "1", "", !row.deaths)}
         ${premiumStatementLine("Custo mortes", formatCurrency(row.deathCost, 2), { valueClass: "negative" })}
         ${premiumStatementLine("Brincos", formatCurrency(row.tags, 2), { valueClass: "negative", note: "R$ 2,50 fixo por cabeca" })}
         ${premiumStatementLine("Fee monitoramento", formatCurrency(row.monitoringFee, 2), { valueClass: "negative", note: `${formatNumber(row.monitoringFeeRate * 100, 2)}% parceiro` })}
@@ -1315,23 +1356,15 @@ if (nodes.priceHeadInput) {
 nodes.memoryTable.addEventListener("change", (event) => {
   const input = event.target.closest("[data-premium-key][data-premium-field]");
   if (!input) return;
-  const rowKey = input.dataset.premiumKey;
-  const field = input.dataset.premiumField;
-  const nextValue = input.type === "date"
-    ? input.value
-    : input.value === ""
-      ? ""
-      : parsePtNumber(input.value);
-  premiumState.rowOverrides[rowKey] = {
-    ...(premiumState.rowOverrides[rowKey] || {})
-  };
-  if (nextValue === "") {
-    delete premiumState.rowOverrides[rowKey][field];
-  } else {
-    premiumState.rowOverrides[rowKey][field] = nextValue;
-  }
-  if (!Object.keys(premiumState.rowOverrides[rowKey]).length) delete premiumState.rowOverrides[rowKey];
+  savePremiumRowInput(input);
   renderPremium();
+});
+
+nodes.memoryTable.addEventListener("input", (event) => {
+  const input = event.target.closest("[data-premium-key][data-premium-field]");
+  if (!input || input.type === "date") return;
+  maskPremiumNumberInput(input);
+  savePremiumRowInput(input);
 });
 
 nodes.printButton.addEventListener("click", () => {
