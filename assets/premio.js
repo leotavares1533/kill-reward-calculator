@@ -15,14 +15,23 @@ const PREMIUM_PARTNER_FEE_RATES = [
   ["RAMAX IMPORTACAO E EXPORTACAO DE ALIMENTOS LTDA", 0],
   ["STEFAN ZEMBROD", 0],
   ["FAZENDA RIO MADEIRA ROVEMA", 0.0025],
+  ["FAZENDA RIO MADEIRA S A FARM", 0.0025],
   ["JOSE FAVARETTO 3M", 0.0025],
+  ["JOSE ARNALDO FAVARETTO", 0.0025],
   ["VICTOR RORATTO AGUA LIMPA", 0.0025],
   ["VITOR RORATTO AGUA LIMPA", 0.0025],
+  ["VITOR RORATTO NEVES E OUTRO", 0.0025],
   ["SEBASTIAO FERNANDES LAGE FAZCARNE", 0.0025],
+  ["SEBASTIAO FERNANDES LAGE FILHO", 0.0025],
   ["CAPITAR GUILHERME", 0],
+  ["GUILHERME RODRIGUES DA CUNHA", 0],
+  ["BOIPREMIUM AGRO LTDA", 0],
   ["FERNANDO SISTO ARANTES AGRO SAO JOAO", 0.0075],
+  ["FERNANDO SISTO ARANTES", 0.0075],
   ["PAULO HENRIQUE QUEIROZ NUTRITAURUS", 0.005],
-  ["ADAM PERRONE SAMMOUR 3I BANDEIRANTES", 0]
+  ["PAULO HENRIQUE QUEIROZ", 0.005],
+  ["ADAM PERRONE SAMMOUR 3I BANDEIRANTES", 0],
+  ["ADAM PERRONE SAMMOUR E OUTROS", 0]
 ];
 const PREMIUM_EXAMPLE_PRICE_BY_DATE = {
   "2026-08-19": 1511462.09 / 225,
@@ -143,18 +152,102 @@ const PREMIUM_FIELD_ALIASES = {
     "DATA DO ABATE",
     "DT ABATE"
   ],
-  "Data de pagamento": ["DATA DE PAGAMENTO", "DATA PAGAMENTO", "DT PAGAMENTO", "DT PGTO", "DATA PGT ABATE", "PAGAMENTO DATA"],
+  "Data de saída real": [
+    "DATA DE SAIDA REAL",
+    "DATA DE SA DA REAL",
+    "DATA DE SAÍDA REAL",
+    "DT SAIDA REAL",
+    "DT SA DA REAL",
+    "SAIDA REAL",
+    "SA DA REAL"
+  ],
+  "Data de pagamento": ["DATA DE PAGAMENTO", "DATA DO PAGAMENTO", "DATA PAGAMENTO", "DT PAGAMENTO", "DT PGTO", "DATA PGT ABATE", "PAGAMENTO DATA"],
   "Data de entrada": ["DATA DE ENTRADA"],
-  "Dia do lote": ["DIA DO LOTE", "DATA DO LOTE", "DT LOTE", "DATA LOTE", "DATA DE AQUISICAO", "DATA AQUISICAO", "DT AQUISICAO", "DATA AQUISICAO FUNDO", "DT AQUISICAO FUNDO"],
+  "Dia do lote": [
+    "DIA DO LOTE",
+    "DATA DO LOTE",
+    "DT LOTE",
+    "DATA LOTE",
+    "DATA DE AQUISICAO",
+    "DATA AQUISICAO",
+    "DT AQUISICAO",
+    "DATA AQUISICAO FUNDO",
+    "DT AQUISICAO FUNDO",
+    "DATA EMISSAO TERMO DE CESSAO",
+    "DATA EMISS O TERMO DE CESS O",
+    "DATA EMISSAO DO TERMO DE CESSAO",
+    "DATA DO TERMO DE CESSAO",
+    "DATA DO TERMO DE CESS O",
+    "DATA DO TERMO DE CESSÃO",
+    "DATA DE CESSAO",
+    "DATA DE CESSÃO"
+  ],
   "Peso de carcaça": ["PESO DE CARCACA", "PESO DE CARCA A", "PESO DE CARCAÇA", "PESO DE CARCA�A"],
   "Quantidade de animais": ["QUANTIDADE DE ANIMAIS", "QTD ANIMAIS", "QTD. ANIMAIS", "QTDE ANIMAIS", "QTD CABECAS", "QTD. CABECAS", "CABECAS", "ANIMAIS", "QTD"],
+  "Quantidade de animais do lote": ["QUANTIDADE DE ANIMAIS DO LOTE", "QTDE ANIMAIS DO LOTE", "QTD ANIMAIS DO LOTE", "CABECAS DO LOTE"],
   "Valor Pago": ["VALOR PAGO", "PGT ABATE", "PGT DE ABATE", "PAGAMENTO ABATE", "ABATE"],
   "Preço/cabeça": ["PRECO CABECA", "PRECO CB", "CB R", "CB R$", "PREÇO CABEÇA", "PREÇO/CABEÇA"],
-  "Valor de aquisição por cabeça": ["VALOR DE AQUISICAO POR CABECA", "VALOR AQUISICAO POR CABECA", "VALOR AQUISICAO CABECA", "VALOR DE AQUISIÇÃO POR CABEÇA", "VA CABECA", "CUSTO CABECA", "CUSTO/CABECA", "PRECO AQUISICAO CABECA", "PRECO DE AQUISICAO POR CABECA"],
-  "Taxa de cessão": ["TAXA DE CESSAO", "TX CESSAO", "TAXA CESSAO", "TAXA DE CESSÃO", "TAXA MES", "TAXA A M", "TAXA AM", "TAXA"],
-  "VP na data do abate": ["VP NA DATA DO ABATE", "VP DATA ABATE", "VP ABATE", "VALOR PRESENTE NA DATA DO ABATE", "VALOR PRESENTE ABATE", "VP SISTEMA", "VP CALCULADO SISTEMA"],
+  "Valor de aquisição por cabeça": [
+    "VALOR DE AQUISICAO POR CABECA",
+    "VALOR AQUISICAO POR CABECA",
+    "VALOR AQUISICAO CABECA",
+    "VALOR AQUISICAO POR CABECA ITEM 9 TERMO DE CESSAO",
+    "VALOR DE AQUISI O POR CABE A",
+    "VALOR AQUISI O POR CABE A",
+    "VALOR AQUISI O POR CABE A ITEM 9 TERMO DE CESS O",
+    "VALOR DE AQUISIÇÃO POR CABEÇA",
+    "VA CABECA",
+    "CUSTO CABECA",
+    "CUSTO/CABECA",
+    "PRECO AQUISICAO CABECA",
+    "PRECO DE AQUISICAO POR CABECA"
+  ],
+  "Valor de aquisição total": [
+    "VALOR DE AQUISICAO",
+    "VALOR AQUISICAO",
+    "VALOR DE AQUISI O",
+    "VALOR AQUISI O",
+    "VALOR DE AQUISIÇÃO",
+    "VALOR DE AQUISICAO TOTAL",
+    "VALOR AQUISICAO TOTAL",
+    "VALOR DE AQUISI O TOTAL",
+    "VALOR AQUISI O TOTAL",
+    "VALOR AQUISICAO DO LOTE",
+    "VALOR AQUISI O DO LOTE"
+  ],
+  "Taxa de cessão": [
+    "TAXA DE CESSAO",
+    "TAXA DO TERMO DE CESSAO",
+    "TAXA DO TERMO DE CESS O",
+    "TX CESSAO",
+    "TAXA CESSAO",
+    "TAXA DE CESSÃO",
+    "TAXA MES",
+    "TAXA A M",
+    "TAXA AM",
+    "TAXA"
+  ],
+  "VP na data do abate": [
+    "VP NA DATA DO ABATE",
+    "VP DATA ABATE",
+    "VP ABATE",
+    "VALOR PRESENTE NA DATA DO ABATE",
+    "VALOR PRESENTE ABATE",
+    "VALOR PRESENTE NA DATA DO PAGAMENTO",
+    "VALOR PRESENTE",
+    "VP SISTEMA",
+    "VP CALCULADO SISTEMA"
+  ],
   "Fee monitoramento": ["FEE MONITORAMENTO", "FEE DE MONITORAMENTO", "TAXA MONITORAMENTO", "FEE"]
 };
+
+function premiumFieldKeys(field) {
+  return Array.from(new Set(
+    [field, normalizeKey(field), ...(PREMIUM_FIELD_ALIASES[field] || [])]
+      .flatMap((key) => [key, normalizeKey(key)])
+      .filter(Boolean)
+  ));
+}
 
 const buildTermDefaultsByTitle = (defaults) => defaults.reduce((acc, row) => {
   acc[normalizeKey(row.title)] = row;
@@ -230,14 +323,27 @@ function parsePercentRate(value) {
   return number;
 }
 
-function premiumPartnerFeeRate(partner) {
-  const key = normalizeKey(partner);
+function premiumPartnerFeeRate(partner, farm = "") {
+  const key = normalizeKey([partner, farm].filter(Boolean).join(" "));
   if (!key) return null;
   const match = PREMIUM_PARTNER_FEE_RATES.find(([name]) => {
     const normalizedName = normalizeKey(name);
     return key === normalizedName || key.includes(normalizedName) || normalizedName.includes(key);
   });
-  return match ? match[1] : null;
+  if (match) return match[1];
+
+  const ignored = new Set(["DE", "DA", "DO", "DAS", "DOS", "E", "SA", "S", "A", "LTDA", "ME"]);
+  const tokens = key.split(" ").filter((token) => token.length > 2 && !ignored.has(token));
+  let best = null;
+  PREMIUM_PARTNER_FEE_RATES.forEach(([name, rate]) => {
+    const nameTokens = normalizeKey(name).split(" ").filter((token) => token.length > 2 && !ignored.has(token));
+    const hits = nameTokens.filter((token) => tokens.includes(token)).length;
+    if (hits < 2) return;
+    if (!best || hits > best.hits || (hits === best.hits && nameTokens.length < best.length)) {
+      best = { rate, hits, length: nameTokens.length };
+    }
+  });
+  return best ? best.rate : null;
 }
 
 function parseDelimitedText(text, delimiter = ";") {
@@ -278,7 +384,7 @@ function parseDelimitedText(text, delimiter = ";") {
 }
 
 function premiumRowValue(row, field) {
-  const keys = [field, normalizeKey(field), ...(PREMIUM_FIELD_ALIASES[field] || [])];
+  const keys = premiumFieldKeys(field);
   for (const key of keys) {
     if (row[key] !== undefined && row[key] !== null && row[key] !== "") return row[key];
   }
@@ -303,19 +409,29 @@ function normalizePremiumCsvRecord(raw) {
     normalized[key] = value;
     normalized[normalizeKey(key)] = value;
   });
+  const farm = String(premiumRowValue(normalized, "Fazenda") || "").trim();
   const title = String(premiumRowValue(normalized, "Número do título") || "").trim();
   const term = String(premiumRowValue(normalized, "Termo / NF") || title).trim();
   const quantity = parsePtNumber(premiumRowValue(normalized, "Quantidade de animais"));
   const paymentAmount = parsePtNumber(premiumRowValue(normalized, "Valor Pago"));
   const pricePerHeadRaw = premiumRowValue(normalized, "Preço/cabeça");
   const acquisitionValuePerHeadRaw = premiumRowValue(normalized, "Valor de aquisição por cabeça");
+  const acquisitionValueTotalRaw = premiumRowValue(normalized, "Valor de aquisição total");
+  const lotAnimalCount = parsePtNumber(premiumRowValue(normalized, "Quantidade de animais do lote"));
   const assignmentRateRaw = premiumRowValue(normalized, "Taxa de cessão");
   const pricePerHead = parsePtNumber(pricePerHeadRaw);
+  const directAcquisitionValuePerHead = parsePtNumber(acquisitionValuePerHeadRaw);
+  const acquisitionValueTotal = parsePtNumber(acquisitionValueTotalRaw);
+  const acquisitionValuePerHead = directAcquisitionValuePerHead || (
+    acquisitionValueTotal > 0 && lotAnimalCount > 0 ? acquisitionValueTotal / lotAnimalCount : 0
+  );
   const partner = String(premiumRowValue(normalized, "Parceiro") || "").trim();
   const feeRaw = premiumRowValue(normalized, "Fee monitoramento");
   const reportFeeRate = feeRaw !== "" ? parsePercentRate(feeRaw) : null;
+  const realExitDate = parseBrazilianDateKey(premiumRowValue(normalized, "Data de saída real"));
+  const confirmedAbateDate = parseBrazilianDateKey(premiumRowValue(normalized, "Data de confirmação de abate"));
   return {
-    farm: String(premiumRowValue(normalized, "Fazenda") || "").trim(),
+    farm,
     lot: String(premiumRowValue(normalized, "Lote") || "").trim(),
     partner,
     term,
@@ -325,7 +441,8 @@ function normalizePremiumCsvRecord(raw) {
     lastro: String(premiumRowValue(normalized, "Lastro") || "").trim(),
     status: String(premiumRowValue(normalized, "STATUS ATUAL") || "").trim(),
     statusKey: normalizePremiumStatus(premiumRowValue(normalized, "STATUS ATUAL")),
-    abateDate: parseBrazilianDateKey(premiumRowValue(normalized, "Data de confirmação de abate")),
+    abateDate: realExitDate || confirmedAbateDate,
+    abateDateSource: realExitDate ? "saidaReal" : confirmedAbateDate ? "confirmacao" : "",
     paymentDate: parseBrazilianDateKey(premiumRowValue(normalized, "Data de pagamento")),
     entryDate: parseBrazilianDateKey(premiumRowValue(normalized, "Data de entrada")),
     lotDate: parseBrazilianDateKey(premiumRowValue(normalized, "Dia do lote")),
@@ -334,12 +451,12 @@ function normalizePremiumCsvRecord(raw) {
     paymentAmount,
     pricePerHead,
     hasPricePerHead: pricePerHeadRaw !== "",
-    acquisitionValuePerHead: parsePtNumber(acquisitionValuePerHeadRaw),
-    hasAcquisitionValuePerHead: acquisitionValuePerHeadRaw !== "",
+    acquisitionValuePerHead,
+    hasAcquisitionValuePerHead: acquisitionValuePerHeadRaw !== "" || (acquisitionValueTotalRaw !== "" && lotAnimalCount > 0),
     assignmentRate: parsePercentRate(assignmentRateRaw),
     hasAssignmentRate: assignmentRateRaw !== "",
     systemVpAtAbate: parsePtNumber(premiumRowValue(normalized, "VP na data do abate")),
-    reportFeeRate: reportFeeRate ?? premiumPartnerFeeRate(partner),
+    reportFeeRate: reportFeeRate ?? premiumPartnerFeeRate(partner, farm),
     raw: normalized
   };
 }
@@ -347,7 +464,7 @@ function normalizePremiumCsvRecord(raw) {
 function isKnownPremiumHeader(value) {
   const key = normalizeKey(value);
   return Object.entries(PREMIUM_FIELD_ALIASES).some(([field, aliases]) =>
-    key === normalizeKey(field) || aliases.includes(key)
+    key === normalizeKey(field) || aliases.some((alias) => normalizeKey(alias) === key)
   );
 }
 
@@ -589,6 +706,8 @@ function premiumRowReferenceDate(row) {
 
 function premiumRowIsAbated(row) {
   if (!premiumRowReferenceDate(row)) return false;
+  if (row.statusKey.includes("MORTE") || row.statusKey === "MORTO") return false;
+  if (row.abateDateSource === "saidaReal") return true;
   if (!row.statusKey) return true;
   return row.statusKey === "ABATIDO" || row.statusKey.includes("ABAT");
 }
@@ -1071,9 +1190,12 @@ function renderPremium() {
   const dateLabel = premiumState.selectedDate ? formatDate(premiumState.selectedDate) : "-";
   const pricePerHead = totals.heads ? totals.revenue / totals.heads : rows[0]?.pricePerHead || 0;
   const farmCount = new Set(rows.map((row) => row.farm).filter(Boolean)).size;
+  const abateDates = premiumDateOptions();
 
   nodes.status.textContent = premiumState.rows.length
-    ? `${formatNumber(premiumState.rows.length)} registros carregados - ${sourceLabel}`
+    ? abateDates.length
+      ? `${formatNumber(premiumState.rows.length)} registros carregados - ${sourceLabel}`
+      : `${formatNumber(premiumState.rows.length)} registros carregados, sem abatidos com data de confirmacao - ${sourceLabel}`
     : premiumState.fileName
       ? `Arquivo lido - nao encontrei a tabela de animais em ${sourceLabel}`
       : "Aguardando arquivo";
@@ -1108,7 +1230,7 @@ function renderPremium() {
 
   nodes.memoryTable.innerHTML = rows.length
     ? premiumFarmSections(rows) + premiumTotalStatement(totals)
-    : `<div class="premium-empty">${premiumState.rows.length ? "Sem animais abatidos para os filtros selecionados" : "Carregue o relatorio do sistema para calcular"}</div>`;
+    : `<div class="premium-empty">${premiumState.rows.length ? "Sem animais abatidos com data de confirmacao no arquivo selecionado" : "Carregue o relatorio do sistema para calcular"}</div>`;
 
   nodes.lotTable.innerHTML = lotRows.length ? lotRows.map((row) => {
     const average = row.heads ? row.carcassWeight / row.heads : 0;

@@ -564,8 +564,8 @@ td strong {
 }
 
 @page {
-  size: A4 landscape;
-  margin: 6mm;
+  size: A4 portrait;
+  margin: 7mm;
 }
 
 @media print {
@@ -642,7 +642,7 @@ td strong {
   }
 
   .premium-kpis {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 4pt;
     margin-bottom: 6pt;
   }
@@ -676,6 +676,7 @@ td strong {
 
   .premium-farm-group {
     gap: 4pt;
+    break-inside: avoid-page;
   }
 
   .premium-farm-head {
@@ -692,18 +693,18 @@ td strong {
   }
 
   .premium-memory-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 4pt;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3.5pt;
   }
 
   .premium-statement {
-    break-inside: avoid;
+    break-inside: avoid-page;
     border-radius: 5pt;
   }
 
   .premium-statement-head {
     gap: 4pt;
-    padding: 5pt 6pt;
+    padding: 4pt 5pt;
   }
 
   .premium-statement-head strong {
@@ -717,7 +718,7 @@ td strong {
 
   .statement-meta {
     gap: 2pt;
-    padding: 4pt 5pt;
+    padding: 3pt 4pt;
   }
 
   .statement-meta span {
@@ -727,13 +728,13 @@ td strong {
   }
 
   .statement-lines {
-    padding: 2pt 4pt 4pt;
+    padding: 1.5pt 3.5pt 3pt;
   }
 
   .statement-line {
-    min-height: 10pt;
+    min-height: 8.5pt;
     gap: 3pt;
-    font-size: 5.2pt;
+    font-size: 5pt;
   }
 
   .statement-line small {
@@ -741,7 +742,7 @@ td strong {
   }
 
   .statement-line strong {
-    font-size: 5.2pt;
+    font-size: 5pt;
   }
 
   .statement-line.is-result,
