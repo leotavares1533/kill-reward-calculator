@@ -901,7 +901,12 @@ function premiumCalculatedRows() {
     const reportAssignmentRate = premiumWeightedAverage(group.weightedAssignmentRate, group.assignmentRateWeight);
     const monthlyRate = premiumNumberOverride(overrideKey, "monthlyRate", group.assignmentRateWeight ? reportAssignmentRate : defaults?.monthlyRate || premiumState.monthlyRate || PREMIUM_DEFAULT_MONTHLY_RATE);
     const dailyRate = Math.pow(1 + monthlyRate, 1 / 30) - 1;
-    const days = Math.max(0, dateDiffDays(issueDate, premiumState.selectedDate));
+    const reportPaymentDatesLabel = Array.from(group.paymentDates).filter(Boolean).sort().map(formatDate).join(", ");
+    const paymentDate = premiumTextOverride(overrideKey, "paymentDate", Array.from(group.paymentDates).filter(Boolean).sort()[0] || "");
+    const paymentDatesLabel = paymentDate ? formatDate(paymentDate) : reportPaymentDatesLabel;
+    const periodEndDate = paymentDate || premiumState.selectedDate;
+    const periodEndLabel = paymentDate ? "pagamento" : "abate sem data de pagamento";
+    const days = Math.max(0, dateDiffDays(issueDate, periodEndDate));
     const periodRate = Math.pow(1 + dailyRate, days) - 1;
     const costPerHead = premiumNumberOverride(overrideKey, "costPerHead", group.acquisitionCostWeight ? reportCostPerHead : defaults?.costPerHead || 0);
     const deaths = premiumNumberOverride(overrideKey, "deaths", Math.max(Number(defaults?.deaths || 0), Number(deathCounts[group.termKey] || deathCounts[group.titleKey] || 0)));
@@ -925,9 +930,6 @@ function premiumCalculatedRows() {
     const deathCost = roundMoney(-deaths * costPerHead * (1 + periodRate));
     const premium = roundMoney(revenue + principal + operationCost + gta + tags + monitoringFee + deathCost);
     const partnersLabel = Array.from(group.partners).filter(Boolean).join(", ");
-    const reportPaymentDatesLabel = Array.from(group.paymentDates).filter(Boolean).sort().map(formatDate).join(", ");
-    const paymentDate = premiumTextOverride(overrideKey, "paymentDate", Array.from(group.paymentDates).filter(Boolean).sort()[0] || "");
-    const paymentDatesLabel = paymentDate ? formatDate(paymentDate) : reportPaymentDatesLabel;
     return {
       ...group,
       overrideKey,
@@ -935,6 +937,8 @@ function premiumCalculatedRows() {
       issueDate,
       paymentDate,
       paymentDatesLabel,
+      periodEndDate,
+      periodEndLabel,
       days,
       monthlyRate,
       periodRate,
@@ -1132,10 +1136,10 @@ function premiumStatement(row) {
         ${premiumStatementOptionalInputLine(row, "Custo GTA", "gtaCost", row.gtaCost, "0.01", "", !row.hasManualGta)}
         ${premiumStatementLine("Receita total", formatCurrency(row.revenue, 2), { className: "is-result", valueClass: "positive" })}
         ${premiumStatementLine("Valor aquis./cabeca", row.costPerHead ? formatCurrency(row.costPerHead, 2) : "-", { valueClass: row.costPerHead ? "" : "negative" })}
-        ${premiumStatementLine("Taxa de cessao", `${formatNumber(row.monthlyRate * 100, 4)}% a.m.`, { note: `periodo ${formatNumber(row.periodRate * 100, 2)}%` })}
+        ${premiumStatementLine("Taxa de cessao", `${formatNumber(row.monthlyRate * 100, 4)}% a.m.`, { note: `ate ${row.periodEndLabel} em ${formatDate(row.periodEndDate)} · periodo ${formatNumber(row.periodRate * 100, 2)}%` })}
         ${premiumStatementLine("Principal", formatCurrency(row.principal, 2), { valueClass: "negative", note: "quantidade x aquisicao/cabeca" })}
         ${premiumStatementLine("Custo da operacao", formatCurrency(row.operationCost, 2), { valueClass: "negative" })}
-        ${premiumStatementLine("VP calculado no abate", formatCurrency(row.calculatedVpAtAbate, 2), { note: "principal atualizado pela taxa de cessao" })}
+        ${premiumStatementLine("VP calculado no pagamento", formatCurrency(row.calculatedVpAtAbate, 2), { note: "principal atualizado pela taxa de cessao" })}
         ${premiumStatementLine("VP sistema no abate", row.systemVpAtAbate ? formatCurrency(row.systemVpAtAbate, 2) : "-", { valueClass: row.systemVpAtAbate ? "" : "negative" })}
         ${premiumStatementLine("Diferenca VP", row.systemVpAtAbate ? formatCurrency(row.vpDifference, 2) : "-", { className: "is-check", valueClass: row.systemVpAtAbate ? vpMatchClass : "negative" })}
         ${premiumStatementOptionalInputLine(row, "Mortes", "deaths", row.deaths, "1", "", !row.deaths)}
@@ -1164,7 +1168,7 @@ function premiumTotalStatement(totals) {
         ${premiumStatementLine("Receita total", formatCurrency(totals.revenue, 2), { className: "is-result", valueClass: "positive" })}
         ${premiumStatementLine("Principal", formatCurrency(totals.principal, 2), { valueClass: "negative" })}
         ${premiumStatementLine("Custo da operacao", formatCurrency(totals.operationCost, 2), { valueClass: "negative" })}
-        ${premiumStatementLine("VP calculado no abate", formatCurrency(totals.calculatedVpAtAbate, 2), {})}
+        ${premiumStatementLine("VP calculado no pagamento", formatCurrency(totals.calculatedVpAtAbate, 2), {})}
         ${premiumStatementLine("VP sistema no abate", totals.systemVpAtAbate ? formatCurrency(totals.systemVpAtAbate, 2) : "-", {})}
         ${premiumStatementLine("Diferenca VP", totals.systemVpAtAbate ? formatCurrency(totals.vpDifference, 2) : "-", { className: "is-check", valueClass: totals.systemVpAtAbate ? signedClass(totals.vpDifference) : "negative" })}
         ${premiumStatementLine("Mortes", formatNumber(totals.deaths), {})}
