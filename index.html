@@ -46,6 +46,39 @@
 
       <section class="premium-kpis" id="premium-kpis"></section>
 
+      <section class="table-card premium-allocation-card" id="premium-allocation-panel" hidden>
+        <div class="card-head">
+          <div>
+            <h3>Rateio do pagamento</h3>
+            <span id="premium-allocation-subtitle">Por quantidade de cabecas</span>
+          </div>
+        </div>
+        <div class="allocation-controls">
+          <label>
+            <span>Valor total pago</span>
+            <input id="premium-allocation-payment-input" type="text" inputmode="decimal" autocomplete="off" data-premium-mask="money">
+          </label>
+          <label>
+            <span>Valor total GTA</span>
+            <input id="premium-allocation-gta-input" type="text" inputmode="decimal" autocomplete="off" data-premium-mask="money">
+          </label>
+        </div>
+        <div class="table-wrap">
+          <table class="wide-table allocation-table">
+            <thead>
+              <tr>
+                <th>Titulo</th>
+                <th class="num">Cabecas</th>
+                <th class="num">Part.</th>
+                <th class="num">Valor pago</th>
+                <th class="num">GTA</th>
+              </tr>
+            </thead>
+            <tbody id="premium-allocation-table"></tbody>
+          </table>
+        </div>
+      </section>
+
       <section class="table-card">
         <div class="card-head">
           <div>
@@ -88,6 +121,6 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-  <script src="./assets/premio.js?v=20260918-title-group"></script>
+  <script src="./assets/premio.js?v=20260921-allocation"></script>
 </body>
 </html>

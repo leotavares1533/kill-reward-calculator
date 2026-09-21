@@ -174,13 +174,23 @@ main {
   font-weight: 800;
 }
 
-.premium-controls {
+.premium-controls,
+.allocation-controls {
   display: grid;
-  grid-template-columns: minmax(260px, 1.35fr) minmax(160px, 0.65fr);
   gap: 10px;
 }
 
-.premium-controls label {
+.premium-controls {
+  grid-template-columns: minmax(260px, 1.35fr) minmax(160px, 0.65fr);
+}
+
+.allocation-controls {
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  margin-bottom: 12px;
+}
+
+.premium-controls label,
+.allocation-controls label {
   display: grid;
   gap: 5px;
   min-width: 0;
@@ -192,7 +202,8 @@ main {
 }
 
 .premium-controls input,
-.premium-controls select {
+.premium-controls select,
+.allocation-controls input {
   width: 100%;
   min-height: 38px;
   border: 1px solid var(--line);
@@ -266,6 +277,10 @@ table {
 
 .premium-memory-table {
   min-width: 1660px;
+}
+
+.allocation-table {
+  min-width: 720px;
 }
 
 .premium-memory-stack {
@@ -533,7 +548,8 @@ td strong {
     justify-content: flex-start;
   }
 
-  .premium-controls {
+  .premium-controls,
+  .allocation-controls {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -558,6 +574,7 @@ td strong {
   }
 
   .premium-controls,
+  .allocation-controls,
   .premium-kpis {
     grid-template-columns: 1fr;
   }
@@ -622,17 +639,20 @@ td strong {
     margin-bottom: 5pt;
   }
 
-  .premium-controls {
+  .premium-controls,
+  .allocation-controls {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 4pt;
   }
 
-  .premium-controls label {
+  .premium-controls label,
+  .allocation-controls label {
     font-size: 5.5pt;
   }
 
   .premium-controls input,
   .premium-controls select,
+  .allocation-controls input,
   .inline-number,
   .inline-date {
     min-height: 16pt;

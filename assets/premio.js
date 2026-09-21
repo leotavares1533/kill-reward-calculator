@@ -660,6 +660,8 @@ const premiumState = {
   selectedDate: "",
   paymentDate: "",
   paymentAmount: 0,
+  allocationPaymentAmount: 0,
+  allocationGtaCost: 0,
   pricePerHead: 0,
   paymentDateTouched: false,
   paymentTouched: false,
@@ -685,6 +687,11 @@ const nodes = {
   tagInput: document.getElementById("premium-tag-input"),
   monitoringFeeInput: document.getElementById("premium-monitoring-fee-input"),
   kpis: document.getElementById("premium-kpis"),
+  allocationPanel: document.getElementById("premium-allocation-panel"),
+  allocationSubtitle: document.getElementById("premium-allocation-subtitle"),
+  allocationPaymentInput: document.getElementById("premium-allocation-payment-input"),
+  allocationGtaInput: document.getElementById("premium-allocation-gta-input"),
+  allocationTable: document.getElementById("premium-allocation-table"),
   memorySubtitle: document.getElementById("premium-memory-subtitle"),
   memoryTable: document.getElementById("premium-memory-table"),
   lotTable: document.getElementById("premium-lot-table"),
@@ -874,6 +881,45 @@ function premiumWeightedAverage(total, weight) {
   return Number(weight || 0) > 0 ? Number(total || 0) / Number(weight || 0) : 0;
 }
 
+function premiumInputMoneyValue(value) {
+  const number = Number(value || 0);
+  return number ? formatNumber(number, 2) : "";
+}
+
+function premiumAllocationRows(groups) {
+  const totalHeads = groups.reduce((sum, group) => sum + Number(group.heads || 0), 0);
+  if (groups.length <= 1 || totalHeads <= 0) return [];
+
+  const totalPayment = Number(premiumState.allocationPaymentAmount || 0);
+  const totalGta = Number(premiumState.allocationGtaCost || 0);
+  let paymentRunning = 0;
+  let gtaRunning = 0;
+
+  return groups.map((group, index) => {
+    const defaults = premiumTermDefault(group.title || group.term);
+    const share = Number(group.heads || 0) / totalHeads;
+    const isLast = index === groups.length - 1;
+    const paymentAmount = totalPayment > 0
+      ? (isLast ? roundMoney(totalPayment - paymentRunning) : roundMoney(totalPayment * share))
+      : 0;
+    const gtaCost = totalGta > 0
+      ? (isLast ? roundMoney(totalGta - gtaRunning) : roundMoney(totalGta * share))
+      : 0;
+
+    paymentRunning = roundMoney(paymentRunning + paymentAmount);
+    gtaRunning = roundMoney(gtaRunning + gtaCost);
+
+    return {
+      key: group.key,
+      title: group.title && group.title !== "-" ? group.title : defaults?.displayTitle || group.term || "-",
+      heads: Number(group.heads || 0),
+      share,
+      paymentAmount,
+      gtaCost
+    };
+  });
+}
+
 function premiumNumberOverride(titleKey, field, fallback) {
   const value = Number(premiumState.rowOverrides[titleKey]?.[field]);
   return Number.isFinite(value) ? value : fallback;
@@ -891,10 +937,13 @@ function premiumCalculatedRows() {
   const groups = premiumGroupRows();
   const fallbackPricePerHead = premiumPriceFromRows(groups);
   const deathCounts = premiumDeathCountByTitle();
+  const allocationRows = premiumAllocationRows(groups);
+  const allocationByKey = new Map(allocationRows.map((row) => [row.key, row]));
 
   return groups.map((group) => {
     const defaults = premiumTermDefault(group.title || group.term);
     const overrideKey = group.key;
+    const allocation = allocationByKey.get(overrideKey);
     const issueDate = group.rows
       .map((row) => row.lotDate || row.entryDate)
       .filter(Boolean)
@@ -914,10 +963,14 @@ function premiumCalculatedRows() {
     const deaths = premiumNumberOverride(overrideKey, "deaths", Math.max(Number(defaults?.deaths || 0), Number(deathCounts[group.titleKey] || deathCounts[group.termKey] || 0)));
     const hasManualGta = premiumHasOverride(overrideKey, "gtaCost");
     const hasManualPayment = premiumHasOverride(overrideKey, "paymentAmount");
-    const gtaCost = premiumNumberOverride(overrideKey, "gtaCost", 0);
+    const allocatedPaymentAmount = Number(allocation?.paymentAmount || 0);
+    const allocatedGtaCost = Number(allocation?.gtaCost || 0);
+    const hasAllocatedPayment = !hasManualPayment && allocatedPaymentAmount > 0;
+    const hasAllocatedGta = !hasManualGta && allocatedGtaCost > 0;
+    const gtaCost = premiumNumberOverride(overrideKey, "gtaCost", allocatedGtaCost || 0);
     const monitoringFeeRate = premiumNumberOverride(overrideKey, "monitoringFeeRate", group.reportFeeRate ?? 0);
     const reportPricePerHead = premiumWeightedAverage(group.weightedPricePerHead, group.priceWeight);
-    const paymentAmount = premiumNumberOverride(overrideKey, "paymentAmount", group.paymentAmount || 0);
+    const paymentAmount = premiumNumberOverride(overrideKey, "paymentAmount", allocatedPaymentAmount || group.paymentAmount || 0);
     const pricePerHead = reportPricePerHead || (paymentAmount && group.heads ? paymentAmount / group.heads : 0) || fallbackPricePerHead;
     const grossPrincipal = roundMoney(group.heads * costPerHead);
     const calculatedVpAtAbate = roundMoney(grossPrincipal * (1 + periodRate));
@@ -950,6 +1003,11 @@ function premiumCalculatedRows() {
       gtaCost,
       hasManualGta,
       hasManualPayment,
+      hasAllocatedGta,
+      hasAllocatedPayment,
+      allocatedGtaCost,
+      allocatedPaymentAmount,
+      allocationShare: Number(allocation?.share || 0),
       paymentAmount,
       revenue,
       principal,
@@ -1117,6 +1175,8 @@ function savePremiumRowInput(input) {
 
 function premiumStatement(row) {
   const vpMatchClass = Math.abs(row.vpDifference || 0) <= 1 ? "positive" : signedClass(row.vpDifference);
+  const paymentNote = row.hasAllocatedPayment ? "rateado por cabecas" : "";
+  const gtaNote = row.hasAllocatedGta ? "rateado por cabecas" : "";
   return `
     <article class="premium-statement">
       <div class="premium-statement-head">
@@ -1135,8 +1195,8 @@ function premiumStatement(row) {
       </div>
       <div class="statement-lines">
         ${premiumStatementDateInputLine(row, "Data pagamento", "paymentDate", row.paymentDate)}
-        ${premiumStatementOptionalInputLine(row, "Valor pago", "paymentAmount", row.paymentAmount, "0.01", "", !row.hasManualPayment && !row.paymentAmount)}
-        ${premiumStatementOptionalInputLine(row, "Custo GTA", "gtaCost", row.gtaCost, "0.01", "", !row.hasManualGta)}
+        ${premiumStatementOptionalInputLine(row, "Valor pago", "paymentAmount", row.paymentAmount, "0.01", paymentNote, !row.hasManualPayment && !row.paymentAmount)}
+        ${premiumStatementOptionalInputLine(row, "Custo GTA", "gtaCost", row.gtaCost, "0.01", gtaNote, !row.hasManualGta && !row.gtaCost)}
         ${premiumStatementLine("Receita total", formatCurrency(row.revenue, 2), { className: "is-result", valueClass: "positive" })}
         ${premiumStatementLine("Valor aquis./cabeca", row.costPerHead ? formatCurrency(row.costPerHead, 2) : "-", { valueClass: row.costPerHead ? "" : "negative" })}
         ${premiumStatementLine("Taxa de cessao", `${formatNumber(row.monthlyRate * 100, 4)}% a.m.`, { note: `ate ${row.periodEndLabel} em ${formatDate(row.periodEndDate)} · periodo ${formatNumber(row.periodRate * 100, 2)}%` })}
@@ -1224,6 +1284,37 @@ function renderPremiumFilters() {
   nodes.dateFilter.value = premiumState.selectedDate;
 }
 
+function renderPremiumAllocation(rows) {
+  if (!nodes.allocationPanel) return;
+
+  const showAllocation = rows.length > 1;
+  nodes.allocationPanel.hidden = !showAllocation;
+  if (!showAllocation) {
+    if (nodes.allocationTable) nodes.allocationTable.innerHTML = "";
+    return;
+  }
+
+  const totalHeads = rows.reduce((sum, row) => sum + Number(row.heads || 0), 0);
+  syncInput(nodes.allocationPaymentInput, premiumInputMoneyValue(premiumState.allocationPaymentAmount));
+  syncInput(nodes.allocationGtaInput, premiumInputMoneyValue(premiumState.allocationGtaCost));
+
+  if (nodes.allocationSubtitle) {
+    nodes.allocationSubtitle.textContent = `${formatNumber(rows.length)} titulos - ${formatNumber(totalHeads)} cabecas`;
+  }
+
+  if (nodes.allocationTable) {
+    nodes.allocationTable.innerHTML = rows.map((row) => `
+      <tr>
+        <td>${escapeHtml(row.displayTitle || row.title || "-")}</td>
+        <td class="num">${formatNumber(row.heads)}</td>
+        <td class="num">${formatNumber((row.allocationShare || 0) * 100, 2)}%</td>
+        <td class="num">${row.allocatedPaymentAmount ? formatCurrency(row.allocatedPaymentAmount, 2) : "-"}</td>
+        <td class="num">${row.allocatedGtaCost ? formatCurrency(row.allocatedGtaCost, 2) : "-"}</td>
+      </tr>
+    `).join("");
+  }
+}
+
 function renderPremium() {
   renderPremiumFilters();
   syncInput(nodes.priceHeadInput, premiumState.pricePerHead ? premiumState.pricePerHead.toFixed(2) : "");
@@ -1234,6 +1325,7 @@ function renderPremium() {
   const rows = premiumCalculatedRows();
   const lotRows = premiumLotRows();
   const totals = premiumTotals(rows);
+  renderPremiumAllocation(rows);
   const sourceLabel = premiumState.fileName ? premiumState.fileName : "sem arquivo";
   const dateLabel = premiumState.selectedDate ? formatDate(premiumState.selectedDate) : "-";
   const pricePerHead = totals.heads ? totals.revenue / totals.heads : rows[0]?.pricePerHead || 0;
@@ -1257,7 +1349,7 @@ function renderPremium() {
   const missingFee = rows.filter((row) => row.reportFeeRate === null || row.reportFeeRate === undefined).length;
   const missingVp = rows.filter((row) => !row.systemVpAtAbate).length;
   const missingPaymentDate = rows.filter((row) => !row.paymentDate).length;
-  const missingGta = rows.filter((row) => !row.hasManualGta).length;
+  const missingGta = rows.filter((row) => !row.hasManualGta && !row.hasAllocatedGta).length;
   const missingInputs = missingCosts + missingRevenue + missingFee + missingVp + missingPaymentDate + missingGta;
   nodes.kpis.innerHTML = [
     ["Abate", dateLabel, `${formatNumber(farmCount)} fazenda${farmCount === 1 ? "" : "s"}`],
@@ -1316,6 +1408,8 @@ nodes.fileInput.addEventListener("change", async (event) => {
     premiumState.rowOverrides = {};
     premiumState.paymentDate = "";
     premiumState.paymentAmount = 0;
+    premiumState.allocationPaymentAmount = 0;
+    premiumState.allocationGtaCost = 0;
     premiumState.pricePerHead = 0;
     premiumState.paymentDateTouched = false;
     premiumState.paymentTouched = false;
@@ -1332,6 +1426,8 @@ nodes.fileInput.addEventListener("change", async (event) => {
 
 nodes.dateFilter.addEventListener("change", (event) => {
   premiumState.selectedDate = event.target.value;
+  premiumState.allocationPaymentAmount = 0;
+  premiumState.allocationGtaCost = 0;
   applyPremiumDateDefaultPrice();
   renderPremium();
 });
@@ -1356,6 +1452,17 @@ if (nodes.priceHeadInput) {
 ].filter(([node]) => node).forEach(([node, field, divisor]) => {
   node.addEventListener("input", (event) => {
     premiumState[field] = parsePtNumber(event.target.value) / divisor;
+    renderPremium();
+  });
+});
+
+[
+  [nodes.allocationPaymentInput, "allocationPaymentAmount"],
+  [nodes.allocationGtaInput, "allocationGtaCost"]
+].filter(([node]) => node).forEach(([node, field]) => {
+  node.addEventListener("input", (event) => {
+    const nextValue = maskPremiumNumberInput(event.target);
+    premiumState[field] = nextValue === "" ? 0 : nextValue;
     renderPremium();
   });
 });
