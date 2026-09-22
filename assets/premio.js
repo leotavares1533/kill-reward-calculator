@@ -660,6 +660,7 @@ const premiumState = {
   selectedDate: "",
   paymentDate: "",
   paymentAmount: 0,
+  allocationPaymentDate: "",
   allocationPaymentAmount: 0,
   allocationGtaCost: 0,
   pricePerHead: 0,
@@ -689,6 +690,7 @@ const nodes = {
   kpis: document.getElementById("premium-kpis"),
   allocationPanel: document.getElementById("premium-allocation-panel"),
   allocationSubtitle: document.getElementById("premium-allocation-subtitle"),
+  allocationPaymentDateInput: document.getElementById("premium-allocation-payment-date-input"),
   allocationPaymentInput: document.getElementById("premium-allocation-payment-input"),
   allocationGtaInput: document.getElementById("premium-allocation-gta-input"),
   allocationTable: document.getElementById("premium-allocation-table"),
@@ -953,7 +955,10 @@ function premiumCalculatedRows() {
     const monthlyRate = premiumNumberOverride(overrideKey, "monthlyRate", group.assignmentRateWeight ? reportAssignmentRate : defaults?.monthlyRate || premiumState.monthlyRate || PREMIUM_DEFAULT_MONTHLY_RATE);
     const dailyRate = Math.pow(1 + monthlyRate, 1 / 30) - 1;
     const reportPaymentDatesLabel = Array.from(group.paymentDates).filter(Boolean).sort().map(formatDate).join(", ");
-    const paymentDate = premiumTextOverride(overrideKey, "paymentDate", Array.from(group.paymentDates).filter(Boolean).sort()[0] || "");
+    const hasManualPaymentDate = premiumHasOverride(overrideKey, "paymentDate");
+    const allocatedPaymentDate = allocation ? String(premiumState.allocationPaymentDate || "") : "";
+    const hasAllocatedPaymentDate = !hasManualPaymentDate && !!allocatedPaymentDate;
+    const paymentDate = premiumTextOverride(overrideKey, "paymentDate", allocatedPaymentDate || Array.from(group.paymentDates).filter(Boolean).sort()[0] || "");
     const paymentDatesLabel = paymentDate ? formatDate(paymentDate) : reportPaymentDatesLabel;
     const periodEndDate = paymentDate || premiumState.selectedDate;
     const periodEndLabel = paymentDate ? "pagamento" : "abate sem data de pagamento";
@@ -1003,10 +1008,13 @@ function premiumCalculatedRows() {
       gtaCost,
       hasManualGta,
       hasManualPayment,
+      hasManualPaymentDate,
       hasAllocatedGta,
       hasAllocatedPayment,
+      hasAllocatedPaymentDate,
       allocatedGtaCost,
       allocatedPaymentAmount,
+      allocatedPaymentDate,
       allocationShare: Number(allocation?.share || 0),
       paymentAmount,
       revenue,
@@ -1176,6 +1184,7 @@ function savePremiumRowInput(input) {
 function premiumStatement(row) {
   const vpMatchClass = Math.abs(row.vpDifference || 0) <= 1 ? "positive" : signedClass(row.vpDifference);
   const paymentNote = row.hasAllocatedPayment ? "rateado por cabecas" : "";
+  const paymentDateNote = row.hasAllocatedPaymentDate ? "aplicada pelo rateio" : "";
   const gtaNote = row.hasAllocatedGta ? "rateado por cabecas" : "";
   return `
     <article class="premium-statement">
@@ -1194,7 +1203,7 @@ function premiumStatement(row) {
         <span>${formatCurrency(row.pricePerHead, 2)}/cab.</span>
       </div>
       <div class="statement-lines">
-        ${premiumStatementDateInputLine(row, "Data pagamento", "paymentDate", row.paymentDate)}
+        ${premiumStatementDateInputLine(row, "Data pagamento", "paymentDate", row.paymentDate, paymentDateNote)}
         ${premiumStatementOptionalInputLine(row, "Valor pago", "paymentAmount", row.paymentAmount, "0.01", paymentNote, !row.hasManualPayment && !row.paymentAmount)}
         ${premiumStatementOptionalInputLine(row, "Custo GTA", "gtaCost", row.gtaCost, "0.01", gtaNote, !row.hasManualGta && !row.gtaCost)}
         ${premiumStatementLine("Receita total", formatCurrency(row.revenue, 2), { className: "is-result", valueClass: "positive" })}
@@ -1295,6 +1304,7 @@ function renderPremiumAllocation(rows) {
   }
 
   const totalHeads = rows.reduce((sum, row) => sum + Number(row.heads || 0), 0);
+  syncInput(nodes.allocationPaymentDateInput, premiumState.allocationPaymentDate);
   syncInput(nodes.allocationPaymentInput, premiumInputMoneyValue(premiumState.allocationPaymentAmount));
   syncInput(nodes.allocationGtaInput, premiumInputMoneyValue(premiumState.allocationGtaCost));
 
@@ -1408,6 +1418,7 @@ nodes.fileInput.addEventListener("change", async (event) => {
     premiumState.rowOverrides = {};
     premiumState.paymentDate = "";
     premiumState.paymentAmount = 0;
+    premiumState.allocationPaymentDate = "";
     premiumState.allocationPaymentAmount = 0;
     premiumState.allocationGtaCost = 0;
     premiumState.pricePerHead = 0;
@@ -1426,6 +1437,7 @@ nodes.fileInput.addEventListener("change", async (event) => {
 
 nodes.dateFilter.addEventListener("change", (event) => {
   premiumState.selectedDate = event.target.value;
+  premiumState.allocationPaymentDate = "";
   premiumState.allocationPaymentAmount = 0;
   premiumState.allocationGtaCost = 0;
   applyPremiumDateDefaultPrice();
@@ -1455,6 +1467,13 @@ if (nodes.priceHeadInput) {
     renderPremium();
   });
 });
+
+if (nodes.allocationPaymentDateInput) {
+  nodes.allocationPaymentDateInput.addEventListener("change", (event) => {
+    premiumState.allocationPaymentDate = event.target.value;
+    renderPremium();
+  });
+}
 
 [
   [nodes.allocationPaymentInput, "allocationPaymentAmount"],

@@ -185,7 +185,7 @@ main {
 }
 
 .allocation-controls {
-  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  grid-template-columns: repeat(3, minmax(160px, 1fr));
   margin-bottom: 12px;
 }
 
@@ -641,7 +641,7 @@ td strong {
 
   .premium-controls,
   .allocation-controls {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 4pt;
   }
 
