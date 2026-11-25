@@ -15,23 +15,14 @@ const PREMIUM_PARTNER_FEE_RATES = [
   ["RAMAX IMPORTACAO E EXPORTACAO DE ALIMENTOS LTDA", 0],
   ["STEFAN ZEMBROD", 0],
   ["FAZENDA RIO MADEIRA ROVEMA", 0.0025],
-  ["FAZENDA RIO MADEIRA S A FARM", 0.0025],
   ["JOSE FAVARETTO 3M", 0.0025],
-  ["JOSE ARNALDO FAVARETTO", 0.0025],
   ["VICTOR RORATTO AGUA LIMPA", 0.0025],
   ["VITOR RORATTO AGUA LIMPA", 0.0025],
-  ["VITOR RORATTO NEVES E OUTRO", 0.0025],
   ["SEBASTIAO FERNANDES LAGE FAZCARNE", 0.0025],
-  ["SEBASTIAO FERNANDES LAGE FILHO", 0.0025],
   ["CAPITAR GUILHERME", 0],
-  ["GUILHERME RODRIGUES DA CUNHA", 0],
-  ["BOIPREMIUM AGRO LTDA", 0],
   ["FERNANDO SISTO ARANTES AGRO SAO JOAO", 0.0075],
-  ["FERNANDO SISTO ARANTES", 0.0075],
   ["PAULO HENRIQUE QUEIROZ NUTRITAURUS", 0.005],
-  ["PAULO HENRIQUE QUEIROZ", 0.005],
-  ["ADAM PERRONE SAMMOUR 3I BANDEIRANTES", 0],
-  ["ADAM PERRONE SAMMOUR E OUTROS", 0]
+  ["ADAM PERRONE SAMMOUR 3I BANDEIRANTES", 0]
 ];
 const PREMIUM_EXAMPLE_PRICE_BY_DATE = {
   "2026-08-19": 1511462.09 / 225,
@@ -46,8 +37,7 @@ const PREMIUM_TERM_DEFAULTS = [
     issueDate: "2026-05-20",
     monthlyRate: 0.0195,
     costPerHead: 4593.98,
-    heads: 148,
-    deaths: 0
+    heads: 148
   },
   {
     title: "JF022026",
@@ -55,8 +45,7 @@ const PREMIUM_TERM_DEFAULTS = [
     issueDate: "2026-05-21",
     monthlyRate: 0.0195,
     costPerHead: 4513.73,
-    heads: 1006,
-    deaths: 4
+    heads: 1006
   },
   {
     title: "JF032026",
@@ -64,8 +53,7 @@ const PREMIUM_TERM_DEFAULTS = [
     issueDate: "2026-05-22",
     monthlyRate: 0.0195,
     costPerHead: 4434.55,
-    heads: 138,
-    deaths: 1
+    heads: 138
   },
   {
     title: "JF042026",
@@ -73,8 +61,7 @@ const PREMIUM_TERM_DEFAULTS = [
     issueDate: "2026-05-25",
     monthlyRate: 0.0195,
     costPerHead: 5000,
-    heads: 308,
-    deaths: 2
+    heads: 308
   },
   {
     title: "JF052026",
@@ -82,8 +69,7 @@ const PREMIUM_TERM_DEFAULTS = [
     issueDate: "2026-05-26",
     monthlyRate: 0.0195,
     costPerHead: 4078.61,
-    heads: 1502,
-    deaths: 9
+    heads: 1502
   },
   {
     title: "JF062026",
@@ -91,8 +77,7 @@ const PREMIUM_TERM_DEFAULTS = [
     issueDate: "2026-05-26",
     monthlyRate: 0.0195,
     costPerHead: 4765.33,
-    heads: 540,
-    deaths: 3
+    heads: 540
   },
   {
     title: "JF072026",
@@ -100,8 +85,7 @@ const PREMIUM_TERM_DEFAULTS = [
     issueDate: "2026-05-27",
     monthlyRate: 0.0195,
     costPerHead: 4963.36,
-    heads: 286,
-    deaths: 0
+    heads: 286
   }
 ];
 
@@ -144,110 +128,32 @@ const PREMIUM_FIELD_ALIASES = {
   "Parceiro": ["PARCEIRO", "NOME PARCEIRO", "NOME DO PARCEIRO", "CEDENTE", "PRODUTOR", "FORNECEDOR"],
   "Número do título": ["NUMERO DO TITULO", "N MERO DO T TULO", "NÚMERO DO TÍTULO", "N�MERO DO T�TULO", "N TITULO", "NO TITULO", "N DO TITULO", "NUM TITULO", "NUM. TITULO", "TITULO", "TÍTULO"],
   "Termo / NF": ["TERMO", "TERMO NF", "TERMO NUMERO DA NF", "NUMERO DA NF", "N MERO DA NF", "NUMERO NF", "NF", "NOTA FISCAL", "NOTA", "NUMERO NOTA FISCAL", "NUMERO DA NOTA", "NUMERO DA NOTA FISCAL", "N NOTA", "N NOTA FISCAL"],
+  "Data de saída real": ["DATA DE SAIDA REAL", "DATA SAIDA REAL", "DT SAIDA REAL", "DATA DO ABATE", "DT ABATE"],
   "Data de confirmação de abate": [
     "DATA DE CONFIRMACAO DE ABATE",
+    "DATA DE CONFIRMACAO DE ABATE MORTE",
     "DATA DE CONFIRMA O DE ABATE",
     "DATA DE CONFIRMAÇÃO DE ABATE",
-    "DATA DE CONFIRMA��O DE ABATE",
-    "DATA DO ABATE",
-    "DT ABATE"
+    "DATA DE CONFIRMA��O DE ABATE"
   ],
-  "Data de saída real": [
-    "DATA DE SAIDA REAL",
-    "DATA DE SA DA REAL",
-    "DATA DE SAÍDA REAL",
-    "DT SAIDA REAL",
-    "DT SA DA REAL",
-    "SAIDA REAL",
-    "SA DA REAL"
-  ],
-  "Data de pagamento": ["DATA DE PAGAMENTO", "DATA DO PAGAMENTO", "DATA PAGAMENTO", "DT PAGAMENTO", "DT PGTO", "DATA PGT ABATE", "PAGAMENTO DATA"],
+  "Data de pagamento": ["DATA DE PAGAMENTO", "DATA PAGAMENTO", "DT PAGAMENTO", "DT PGTO", "DATA PGT ABATE", "PAGAMENTO DATA"],
   "Data de entrada": ["DATA DE ENTRADA"],
-  "Dia do lote": [
-    "DIA DO LOTE",
-    "DATA DO LOTE",
-    "DT LOTE",
-    "DATA LOTE",
-    "DATA DE AQUISICAO",
-    "DATA AQUISICAO",
-    "DT AQUISICAO",
-    "DATA AQUISICAO FUNDO",
-    "DT AQUISICAO FUNDO",
-    "DATA EMISSAO TERMO DE CESSAO",
-    "DATA EMISS O TERMO DE CESS O",
-    "DATA EMISSAO DO TERMO DE CESSAO",
-    "DATA DO TERMO DE CESSAO",
-    "DATA DO TERMO DE CESS O",
-    "DATA DO TERMO DE CESSÃO",
-    "DATA DE CESSAO",
-    "DATA DE CESSÃO"
-  ],
+  "Data do termo de cessão": ["DATA DO TERMO DE CESSAO", "DATA TERMO DE CESSAO", "DATA DO TERMO", "DATA TERMO", "DT TERMO DE CESSAO"],
+  "TAG Ceres": ["TAG", "TAG CERES", "BRINCO CERES"],
+  "SISBOV": ["SISBOV", "TAG SISBOV"],
+  "Dia do lote": ["DIA DO LOTE", "DATA DO LOTE", "DT LOTE", "DATA LOTE", "DATA DE AQUISICAO", "DATA AQUISICAO", "DT AQUISICAO", "DATA AQUISICAO FUNDO", "DT AQUISICAO FUNDO"],
   "Peso de carcaça": ["PESO DE CARCACA", "PESO DE CARCA A", "PESO DE CARCAÇA", "PESO DE CARCA�A"],
   "Quantidade de animais": ["QUANTIDADE DE ANIMAIS", "QTD ANIMAIS", "QTD. ANIMAIS", "QTDE ANIMAIS", "QTD CABECAS", "QTD. CABECAS", "CABECAS", "ANIMAIS", "QTD"],
-  "Quantidade de animais do lote": ["QUANTIDADE DE ANIMAIS DO LOTE", "QTDE ANIMAIS DO LOTE", "QTD ANIMAIS DO LOTE", "CABECAS DO LOTE"],
   "Valor Pago": ["VALOR PAGO", "PGT ABATE", "PGT DE ABATE", "PAGAMENTO ABATE", "ABATE"],
   "Preço/cabeça": ["PRECO CABECA", "PRECO CB", "CB R", "CB R$", "PREÇO CABEÇA", "PREÇO/CABEÇA"],
-  "Valor de aquisição por cabeça": [
-    "VALOR DE AQUISICAO POR CABECA",
-    "VALOR AQUISICAO POR CABECA",
-    "VALOR AQUISICAO CABECA",
-    "VALOR AQUISICAO POR CABECA ITEM 9 TERMO DE CESSAO",
-    "VALOR DE AQUISI O POR CABE A",
-    "VALOR AQUISI O POR CABE A",
-    "VALOR AQUISI O POR CABE A ITEM 9 TERMO DE CESS O",
-    "VALOR DE AQUISIÇÃO POR CABEÇA",
-    "VA CABECA",
-    "CUSTO CABECA",
-    "CUSTO/CABECA",
-    "PRECO AQUISICAO CABECA",
-    "PRECO DE AQUISICAO POR CABECA"
-  ],
-  "Valor de aquisição total": [
-    "VALOR DE AQUISICAO",
-    "VALOR AQUISICAO",
-    "VALOR DE AQUISI O",
-    "VALOR AQUISI O",
-    "VALOR DE AQUISIÇÃO",
-    "VALOR DE AQUISICAO TOTAL",
-    "VALOR AQUISICAO TOTAL",
-    "VALOR DE AQUISI O TOTAL",
-    "VALOR AQUISI O TOTAL",
-    "VALOR AQUISICAO DO LOTE",
-    "VALOR AQUISI O DO LOTE"
-  ],
-  "Taxa de cessão": [
-    "TAXA DE CESSAO",
-    "TAXA DO TERMO DE CESSAO",
-    "TAXA DO TERMO DE CESS O",
-    "TX CESSAO",
-    "TAXA CESSAO",
-    "TAXA DE CESSÃO",
-    "TAXA MES",
-    "TAXA A M",
-    "TAXA AM",
-    "TAXA"
-  ],
-  "VP na data do abate": [
-    "VP NA DATA DO ABATE",
-    "VP DATA ABATE",
-    "VP ABATE",
-    "VALOR PRESENTE NA DATA DO ABATE",
-    "VALOR PRESENTE ABATE",
-    "VALOR PRESENTE NA DATA DO PAGAMENTO",
-    "VALOR PRESENTE",
-    "VP SISTEMA",
-    "VP CALCULADO SISTEMA"
-  ],
+  "Valor do animal": ["VALOR DO ANIMAL"],
+  "Valor de aquisição por cabeça": ["VALOR DE AQUISICAO POR CABECA", "VALOR AQUISICAO POR CABECA", "VALOR AQUISICAO CABECA", "VALOR DE AQUISIÇÃO POR CABEÇA", "VA CABECA", "CUSTO CABECA", "CUSTO/CABECA", "PRECO AQUISICAO CABECA", "PRECO DE AQUISICAO POR CABECA"],
+  "Aquisição total do termo": ["VALOR DE AQUISICAO", "VALOR AQUISICAO", "VALOR TOTAL DE AQUISICAO", "VALOR DE AQUISICAO DO TERMO", "VALOR DE AQUISICAO TOTAL", "VALOR AQUISICAO TOTAL", "VALOR DE AQUISI O TOTAL", "VALOR AQUISI O TOTAL", "VALOR AQUISICAO DO LOTE", "VALOR AQUISI O DO LOTE"],
+  "Quantidade original do termo": ["QUANTIDADE ORIGINAL DO TERMO", "QUANTIDADE ORIGINAL DE CABECAS DO TERMO", "QUANTIDADE ORIGINAL DE ANIMAIS DO TERMO", "QUANTIDADE DE CABECAS DO TERMO", "QUANTIDADE DE ANIMAIS DO TERMO", "QTD CABECAS DO TERMO", "QUANTIDADE ORIGINAL DE CABECAS", "QUANTIDADE ORIGINAL DE ANIMAIS", "QUANTIDADE DE ANIMAIS DO LOTE"],
+  "Taxa de cessão": ["TAXA DE CESSAO", "TAXA DO TERMO DE CESSAO", "TX CESSAO", "TAXA CESSAO", "TAXA DE CESSÃO", "TAXA MES", "TAXA A M", "TAXA AM", "TAXA"],
+  "VP na data do abate": ["VP NA DATA DO ABATE", "VP DATA ABATE", "VP ABATE", "VALOR PRESENTE NA DATA DO ABATE", "VALOR PRESENTE ABATE", "VP SISTEMA", "VP CALCULADO SISTEMA", "VALOR PRESENTE NA DATA DO PAGAMENTO", "VALOR PRESENTE"],
   "Fee monitoramento": ["FEE MONITORAMENTO", "FEE DE MONITORAMENTO", "TAXA MONITORAMENTO", "FEE"]
 };
-
-function premiumFieldKeys(field) {
-  return Array.from(new Set(
-    [field, normalizeKey(field), ...(PREMIUM_FIELD_ALIASES[field] || [])]
-      .flatMap((key) => [key, normalizeKey(key)])
-      .filter(Boolean)
-  ));
-}
 
 const buildTermDefaultsByTitle = (defaults) => defaults.reduce((acc, row) => {
   acc[normalizeKey(row.title)] = row;
@@ -323,27 +229,41 @@ function parsePercentRate(value) {
   return number;
 }
 
-function premiumPartnerFeeRate(partner, farm = "") {
-  const key = normalizeKey([partner, farm].filter(Boolean).join(" "));
+function premiumAssignmentRate(value) {
+  const text = String(value ?? "").trim();
+  const annual = /(?:a\.?\s*a\.?|anual|ao ano)\s*$/i.test(text);
+  const monthly = /(?:a\.?\s*m\.?|mensal|ao mes)\s*$/i.test(text);
+  const numberText = text.replace(/(?:a\.?\s*a\.?|a\.?\s*m\.?|anual|mensal|ao ano|ao mes)\s*$/i, "").trim();
+  const validText = /^\+?\d+(?:[.,]\d+)?\s*%?$/.test(numberText);
+  const number = Number(numberText.replace(/[%\s]/g, "").replace(",", "."));
+  const rate = numberText.includes("%") || number > 1 ? number / 100 : number;
+  if (!text || !validText || !Number.isFinite(rate) || rate < 0) return { original: null, monthly: null, basis: "invalid" };
+  const inferredAnnual = !annual && !monthly && rate > 0.025;
+  return { original: rate, monthly: annual || inferredAnnual ? Math.pow(1 + rate, 1 / 12) - 1 : rate,
+    basis: annual ? "annual-reported" : inferredAnnual ? "annual-inferred" : "monthly" };
+}
+
+function premiumPartnerFeeRate(partner) {
+  const key = normalizeKey(partner);
   if (!key) return null;
-  const match = PREMIUM_PARTNER_FEE_RATES.find(([name]) => {
+  if (Object.prototype.hasOwnProperty.call(premiumState.partnerFees, key)) return premiumState.partnerFees[key];
+  const match = PREMIUM_PARTNER_FEE_RATES.find(([name]) => normalizeKey(name) === key) || PREMIUM_PARTNER_FEE_RATES.find(([name]) => {
     const normalizedName = normalizeKey(name);
     return key === normalizedName || key.includes(normalizedName) || normalizedName.includes(key);
   });
-  if (match) return match[1];
+  if (!match) return null;
+  return premiumState.partnerFees[normalizeKey(match[0])] ?? match[1];
+}
 
-  const ignored = new Set(["DE", "DA", "DO", "DAS", "DOS", "E", "SA", "S", "A", "LTDA", "ME"]);
-  const tokens = key.split(" ").filter((token) => token.length > 2 && !ignored.has(token));
-  let best = null;
-  PREMIUM_PARTNER_FEE_RATES.forEach(([name, rate]) => {
-    const nameTokens = normalizeKey(name).split(" ").filter((token) => token.length > 2 && !ignored.has(token));
-    const hits = nameTokens.filter((token) => tokens.includes(token)).length;
-    if (hits < 2) return;
-    if (!best || hits > best.hits || (hits === best.hits && nameTokens.length < best.length)) {
-      best = { rate, hits, length: nameTokens.length };
-    }
-  });
-  return best ? best.rate : null;
+function premiumLoadPartnerFees() {
+  try {
+    const stored = JSON.parse(window.localStorage.getItem("ceres-premio-partner-fees-v1") || "{}");
+    return Object.fromEntries(Object.entries(stored).filter(([key, value]) =>
+      key && typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 1
+    ));
+  } catch {
+    return {};
+  }
 }
 
 function parseDelimitedText(text, delimiter = ";") {
@@ -384,7 +304,7 @@ function parseDelimitedText(text, delimiter = ";") {
 }
 
 function premiumRowValue(row, field) {
-  const keys = premiumFieldKeys(field);
+  const keys = [field, normalizeKey(field), ...(PREMIUM_FIELD_ALIASES[field] || [])];
   for (const key of keys) {
     if (row[key] !== undefined && row[key] !== null && row[key] !== "") return row[key];
   }
@@ -409,29 +329,23 @@ function normalizePremiumCsvRecord(raw) {
     normalized[key] = value;
     normalized[normalizeKey(key)] = value;
   });
-  const farm = String(premiumRowValue(normalized, "Fazenda") || "").trim();
   const title = String(premiumRowValue(normalized, "Número do título") || "").trim();
   const term = String(premiumRowValue(normalized, "Termo / NF") || title).trim();
   const quantity = parsePtNumber(premiumRowValue(normalized, "Quantidade de animais"));
   const paymentAmount = parsePtNumber(premiumRowValue(normalized, "Valor Pago"));
   const pricePerHeadRaw = premiumRowValue(normalized, "Preço/cabeça");
   const acquisitionValuePerHeadRaw = premiumRowValue(normalized, "Valor de aquisição por cabeça");
-  const acquisitionValueTotalRaw = premiumRowValue(normalized, "Valor de aquisição total");
-  const lotAnimalCount = parsePtNumber(premiumRowValue(normalized, "Quantidade de animais do lote"));
+  const animalValuePerHeadRaw = premiumRowValue(normalized, "Valor do animal");
+  const acquisitionTotalRaw = premiumRowValue(normalized, "Aquisição total do termo");
+  const originalHeadCountRaw = premiumRowValue(normalized, "Quantidade original do termo");
   const assignmentRateRaw = premiumRowValue(normalized, "Taxa de cessão");
+  const assignmentRate = premiumAssignmentRate(assignmentRateRaw);
   const pricePerHead = parsePtNumber(pricePerHeadRaw);
-  const directAcquisitionValuePerHead = parsePtNumber(acquisitionValuePerHeadRaw);
-  const acquisitionValueTotal = parsePtNumber(acquisitionValueTotalRaw);
-  const acquisitionValuePerHead = directAcquisitionValuePerHead || (
-    acquisitionValueTotal > 0 && lotAnimalCount > 0 ? acquisitionValueTotal / lotAnimalCount : 0
-  );
   const partner = String(premiumRowValue(normalized, "Parceiro") || "").trim();
   const feeRaw = premiumRowValue(normalized, "Fee monitoramento");
   const reportFeeRate = feeRaw !== "" ? parsePercentRate(feeRaw) : null;
-  const realExitDate = parseBrazilianDateKey(premiumRowValue(normalized, "Data de saída real"));
-  const confirmedAbateDate = parseBrazilianDateKey(premiumRowValue(normalized, "Data de confirmação de abate"));
   return {
-    farm,
+    farm: String(premiumRowValue(normalized, "Fazenda") || "").trim(),
     lot: String(premiumRowValue(normalized, "Lote") || "").trim(),
     partner,
     term,
@@ -441,22 +355,33 @@ function normalizePremiumCsvRecord(raw) {
     lastro: String(premiumRowValue(normalized, "Lastro") || "").trim(),
     status: String(premiumRowValue(normalized, "STATUS ATUAL") || "").trim(),
     statusKey: normalizePremiumStatus(premiumRowValue(normalized, "STATUS ATUAL")),
-    abateDate: realExitDate || confirmedAbateDate,
-    abateDateSource: realExitDate ? "saidaReal" : confirmedAbateDate ? "confirmacao" : "",
+    abateDate: parseBrazilianDateKey(premiumRowValue(normalized, "Data de saída real")),
+    abateConfirmationDate: parseBrazilianDateKey(premiumRowValue(normalized, "Data de confirmação de abate")),
     paymentDate: parseBrazilianDateKey(premiumRowValue(normalized, "Data de pagamento")),
     entryDate: parseBrazilianDateKey(premiumRowValue(normalized, "Data de entrada")),
     lotDate: parseBrazilianDateKey(premiumRowValue(normalized, "Dia do lote")),
+    termDate: parseBrazilianDateKey(premiumRowValue(normalized, "Data do termo de cessão")),
+    tagCeres: String(premiumRowValue(normalized, "TAG Ceres") || "").trim(),
+    sisbov: String(premiumRowValue(normalized, "SISBOV") || "").trim(),
     carcassWeight: parsePtNumber(premiumRowValue(normalized, "Peso de carcaça")),
     headCount: quantity > 0 ? quantity : 1,
     paymentAmount,
     pricePerHead,
     hasPricePerHead: pricePerHeadRaw !== "",
-    acquisitionValuePerHead,
-    hasAcquisitionValuePerHead: acquisitionValuePerHeadRaw !== "" || (acquisitionValueTotalRaw !== "" && lotAnimalCount > 0),
-    assignmentRate: parsePercentRate(assignmentRateRaw),
+    acquisitionValuePerHead: parsePtNumber(acquisitionValuePerHeadRaw),
+    hasAcquisitionValuePerHead: acquisitionValuePerHeadRaw !== "",
+    animalValuePerHead: parsePtNumber(animalValuePerHeadRaw),
+    hasAnimalValuePerHead: String(animalValuePerHeadRaw).trim() !== "",
+    acquisitionTotal: parsePtNumber(acquisitionTotalRaw),
+    hasAcquisitionTotal: acquisitionTotalRaw !== "",
+    originalHeadCount: parsePtNumber(originalHeadCountRaw),
+    hasOriginalHeadCount: originalHeadCountRaw !== "",
+    assignmentRate: assignmentRate.monthly,
+    originalAssignmentRate: assignmentRate.original,
+    assignmentRateBasis: assignmentRate.basis,
     hasAssignmentRate: assignmentRateRaw !== "",
     systemVpAtAbate: parsePtNumber(premiumRowValue(normalized, "VP na data do abate")),
-    reportFeeRate: reportFeeRate ?? premiumPartnerFeeRate(partner, farm),
+    reportFeeRate,
     raw: normalized
   };
 }
@@ -464,7 +389,7 @@ function normalizePremiumCsvRecord(raw) {
 function isKnownPremiumHeader(value) {
   const key = normalizeKey(value);
   return Object.entries(PREMIUM_FIELD_ALIASES).some(([field, aliases]) =>
-    key === normalizeKey(field) || aliases.some((alias) => normalizeKey(alias) === key)
+    key === normalizeKey(field) || aliases.includes(key)
   );
 }
 
@@ -660,7 +585,6 @@ const premiumState = {
   selectedDate: "",
   paymentDate: "",
   paymentAmount: 0,
-  allocationPaymentDate: "",
   allocationPaymentAmount: 0,
   allocationGtaCost: 0,
   pricePerHead: 0,
@@ -672,7 +596,9 @@ const premiumState = {
   tagCostPerHead: PREMIUM_DEFAULT_TAG_COST,
   monitoringFeeRate: PREMIUM_DEFAULT_MONITORING_FEE_RATE,
   priceByDate: { ...PREMIUM_EXAMPLE_PRICE_BY_DATE },
-  rowOverrides: {}
+  rowOverrides: {},
+  termSettings: {},
+  partnerFees: premiumLoadPartnerFees()
 };
 
 const nodes = {
@@ -690,13 +616,18 @@ const nodes = {
   kpis: document.getElementById("premium-kpis"),
   allocationPanel: document.getElementById("premium-allocation-panel"),
   allocationSubtitle: document.getElementById("premium-allocation-subtitle"),
-  allocationPaymentDateInput: document.getElementById("premium-allocation-payment-date-input"),
   allocationPaymentInput: document.getElementById("premium-allocation-payment-input"),
   allocationGtaInput: document.getElementById("premium-allocation-gta-input"),
   allocationTable: document.getElementById("premium-allocation-table"),
   memorySubtitle: document.getElementById("premium-memory-subtitle"),
   memoryTable: document.getElementById("premium-memory-table"),
   lotTable: document.getElementById("premium-lot-table"),
+  feeButton: document.getElementById("premium-fee-button"),
+  feeDialog: document.getElementById("premium-fee-dialog"),
+  feeTable: document.getElementById("premium-fee-table"),
+  feeStatus: document.getElementById("premium-fee-status"),
+  confirmationButton: document.getElementById("premium-confirmation-button"),
+  confirmationStatus: document.getElementById("premium-confirmation-status"),
   printButton: document.getElementById("print-button")
 };
 
@@ -715,8 +646,6 @@ function premiumRowReferenceDate(row) {
 
 function premiumRowIsAbated(row) {
   if (!premiumRowReferenceDate(row)) return false;
-  if (row.statusKey.includes("MORTE") || row.statusKey === "MORTO") return false;
-  if (row.abateDateSource === "saidaReal") return true;
   if (!row.statusKey) return true;
   return row.statusKey === "ABATIDO" || row.statusKey.includes("ABAT");
 }
@@ -756,32 +685,18 @@ function premiumPaymentDateFromSelectedRows() {
   return dates.length === 1 ? dates[0] : "";
 }
 
-function premiumDeathCountByTitle() {
-  const deaths = {};
-  premiumState.rows
-    .filter((row) => row.termKey || row.titleKey)
-    .filter((row) => row.statusKey.includes("MORTE") || row.statusKey === "MORTO")
-    .forEach((row) => {
-      const key = row.titleKey || row.termKey;
-      deaths[key] = (deaths[key] || 0) + 1;
-    });
-  return deaths;
-}
-
 function premiumGroupRows() {
   const grouped = new Map();
-  premiumSelectedAnimalRows().forEach((row) => {
+  premiumSelectedAnimalRows().forEach((row, index) => {
     const titleKey = row.titleKey || row.termKey || "SEM TITULO";
-    const key = [
-      normalizeKey(row.farm || "SEM FAZENDA"),
-      titleKey
-    ].join("__");
+    const key = normalizePremiumTitle(row.title || row.term) || `SEM TERMO ${index + 1}`;
     const current = grouped.get(key) || {
       key,
       farm: row.farm || "-",
       term: row.term || row.title || "-",
       termKey: row.termKey,
       terms: new Set(),
+      farms: new Set(),
       lot: row.lot || "-",
       title: row.title || "-",
       titleKey,
@@ -804,6 +719,7 @@ function premiumGroupRows() {
       rows: []
     };
     current.terms.add(row.term || "-");
+    current.farms.add(row.farm || "Sem fazenda");
     current.lastros.add(row.lastro || "-");
     current.lots.add(row.lot || "-");
     current.titles.add(row.title || "-");
@@ -822,16 +738,15 @@ function premiumGroupRows() {
       current.weightedAcquisitionCost += Number(row.acquisitionValuePerHead || 0) * heads;
       current.acquisitionCostWeight += heads;
     }
-    if (row.hasAssignmentRate) {
+    if (row.hasAssignmentRate && row.assignmentRate !== null) {
       current.weightedAssignmentRate += Number(row.assignmentRate || 0) * heads;
       current.assignmentRateWeight += heads;
     }
-    if (row.reportFeeRate !== null && row.reportFeeRate !== undefined) current.reportFeeRate = Number(row.reportFeeRate || 0);
     current.rows.push(row);
     grouped.set(key, current);
   });
   return Array.from(grouped.values()).sort((a, b) =>
-    `${a.farm}-${a.title}-${a.term}`.localeCompare(`${b.farm}-${b.title}-${b.term}`, "pt-BR")
+    a.key.localeCompare(b.key, "pt-BR")
   );
 }
 
@@ -885,7 +800,9 @@ function premiumWeightedAverage(total, weight) {
 
 function premiumInputMoneyValue(value) {
   const number = Number(value || 0);
-  return number ? formatNumber(number, 2) : "";
+  return number
+    ? number.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    : "";
 }
 
 function premiumAllocationRows(groups) {
@@ -937,35 +854,47 @@ function premiumTextOverride(rowKey, field, fallback = "") {
 
 function premiumCalculatedRows() {
   const groups = premiumGroupRows();
-  const fallbackPricePerHead = premiumPriceFromRows(groups);
-  const deathCounts = premiumDeathCountByTitle();
   const allocationRows = premiumAllocationRows(groups);
   const allocationByKey = new Map(allocationRows.map((row) => [row.key, row]));
 
   return groups.map((group) => {
-    const defaults = premiumTermDefault(group.title || group.term);
-    const overrideKey = group.key;
-    const allocation = allocationByKey.get(overrideKey);
-    const issueDate = group.rows
-      .map((row) => row.lotDate || row.entryDate)
-      .filter(Boolean)
-      .sort()[0] || defaults?.issueDate || premiumState.selectedDate;
+    const overrideKey = `${premiumState.selectedDate}__${group.key}`;
+    const allocation = allocationByKey.get(group.key);
+    const termSettings = premiumState.termSettings[group.key] || {};
+    const termDates = Array.from(new Set(group.rows.map((row) => row.termDate).filter(Boolean)));
+    const issueDate = termDates.length === 1 ? termDates[0] : "";
     const reportCostPerHead = premiumWeightedAverage(group.weightedAcquisitionCost, group.acquisitionCostWeight);
     const reportAssignmentRate = premiumWeightedAverage(group.weightedAssignmentRate, group.assignmentRateWeight);
-    const monthlyRate = premiumNumberOverride(overrideKey, "monthlyRate", group.assignmentRateWeight ? reportAssignmentRate : defaults?.monthlyRate || premiumState.monthlyRate || PREMIUM_DEFAULT_MONTHLY_RATE);
-    const dailyRate = Math.pow(1 + monthlyRate, 1 / 30) - 1;
+    const termRates = new Set(group.rows.filter((row) => row.hasAssignmentRate && row.assignmentRate !== null).map((row) => row.assignmentRate.toPrecision(12)));
+    const monthlyRate = group.assignmentRateWeight ? reportAssignmentRate : null;
+    const dailyRate = Math.pow(1 + (monthlyRate || 0), 1 / 30) - 1;
     const reportPaymentDatesLabel = Array.from(group.paymentDates).filter(Boolean).sort().map(formatDate).join(", ");
-    const hasManualPaymentDate = premiumHasOverride(overrideKey, "paymentDate");
-    const allocatedPaymentDate = allocation ? String(premiumState.allocationPaymentDate || "") : "";
-    const hasAllocatedPaymentDate = !hasManualPaymentDate && !!allocatedPaymentDate;
-    const paymentDate = premiumTextOverride(overrideKey, "paymentDate", allocatedPaymentDate || Array.from(group.paymentDates).filter(Boolean).sort()[0] || "");
+    const reportPaymentDates = Array.from(group.paymentDates).filter(Boolean).sort();
+    const paymentDate = premiumState.paymentDate || (reportPaymentDates.length === 1 ? reportPaymentDates[0] : "");
     const paymentDatesLabel = paymentDate ? formatDate(paymentDate) : reportPaymentDatesLabel;
     const periodEndDate = paymentDate || premiumState.selectedDate;
     const periodEndLabel = paymentDate ? "pagamento" : "abate sem data de pagamento";
     const days = Math.max(0, dateDiffDays(issueDate, periodEndDate));
     const periodRate = Math.pow(1 + dailyRate, days) - 1;
-    const costPerHead = premiumNumberOverride(overrideKey, "costPerHead", group.acquisitionCostWeight ? reportCostPerHead : defaults?.costPerHead || 0);
-    const deaths = premiumNumberOverride(overrideKey, "deaths", Math.max(Number(defaults?.deaths || 0), Number(deathCounts[group.titleKey] || deathCounts[group.termKey] || 0)));
+    const acquisitionTotals = Array.from(new Set(group.rows.filter((row) => row.hasAcquisitionTotal).map((row) => row.acquisitionTotal)));
+    const originalCounts = Array.from(new Set(group.rows.filter((row) => row.hasOriginalHeadCount).map((row) => row.originalHeadCount)));
+    const acquisitionTotal = acquisitionTotals.length === 1 && acquisitionTotals[0] > 0 ? acquisitionTotals[0] : null;
+    const originalHeadCount = originalCounts.length === 1 ? originalCounts[0] : 0;
+    const validOriginalHeadCount = Number.isInteger(originalHeadCount) && originalHeadCount > 0;
+    const legacyCostPerHead = acquisitionTotal !== null && validOriginalHeadCount ? acquisitionTotal / originalHeadCount : group.acquisitionCostWeight ? reportCostPerHead : 0;
+    const hasManualAcquisition = Object.prototype.hasOwnProperty.call(termSettings, "costPerHead");
+    const fallbackCostPerHead = hasManualAcquisition ? Number(termSettings.costPerHead) : legacyCostPerHead;
+    const reportAcquisitionHeads = group.rows.filter((row) => row.hasAnimalValuePerHead).reduce((sum, row) => sum + Number(row.headCount || 1), 0);
+    const fallbackAcquisitionHeads = group.heads - reportAcquisitionHeads;
+    const invalidAnimalValues = group.rows.some((row) => row.hasAnimalValuePerHead && !(row.animalValuePerHead > 0));
+    const animalAcquisition = (row) => Math.max(0, row.hasAnimalValuePerHead ? row.animalValuePerHead : fallbackCostPerHead || 0);
+    const acquisitionAmount = group.rows.reduce((sum, row) => sum + animalAcquisition(row) * Number(row.headCount || 1), 0);
+    const costPerHead = reportAcquisitionHeads === 0 ? Math.max(0, fallbackCostPerHead || 0) : group.heads ? acquisitionAmount / group.heads : 0;
+    const acquisitionBasis = reportAcquisitionHeads === group.heads ? "Valor do animal no relatorio"
+      : hasManualAcquisition ? "Ajuste manual apenas para animais sem valor no relatorio"
+      : acquisitionTotal !== null && validOriginalHeadCount ? "Aquisicao total / quantidade original do termo"
+      : group.acquisitionCostWeight ? "Coluna de aquisicao por cabeca do relatorio" : "Aquisicao nao informada";
+    const deaths = premiumNumberOverride(overrideKey, "deaths", 0);
     const hasManualGta = premiumHasOverride(overrideKey, "gtaCost");
     const hasManualPayment = premiumHasOverride(overrideKey, "paymentAmount");
     const allocatedPaymentAmount = Number(allocation?.paymentAmount || 0);
@@ -973,28 +902,69 @@ function premiumCalculatedRows() {
     const hasAllocatedPayment = !hasManualPayment && allocatedPaymentAmount > 0;
     const hasAllocatedGta = !hasManualGta && allocatedGtaCost > 0;
     const gtaCost = premiumNumberOverride(overrideKey, "gtaCost", allocatedGtaCost || 0);
-    const monitoringFeeRate = premiumNumberOverride(overrideKey, "monitoringFeeRate", group.reportFeeRate ?? 0);
+    const feeEnabled = termSettings.feeEnabled !== false;
+    let feeWeight = 0;
+    let weightedFee = 0;
+    let missingFee = false;
+    group.rows.forEach((animal) => {
+      const registeredRate = premiumPartnerFeeRate(animal.partner);
+      const rate = registeredRate ?? animal.reportFeeRate;
+      if (rate === null || rate === undefined) missingFee = true;
+      const weight = Number(animal.headCount || 1) * (animalAcquisition(animal) || 1);
+      feeWeight += weight;
+      weightedFee += weight * Number(rate || 0);
+    });
+    const monitoringFeeRate = feeEnabled ? premiumWeightedAverage(weightedFee, feeWeight) : 0;
+    const additionalDiscount = Math.max(0, premiumNumberOverride(overrideKey, "additionalDiscount", 0));
+    const discountNote = premiumTextOverride(overrideKey, "discountNote");
     const reportPricePerHead = premiumWeightedAverage(group.weightedPricePerHead, group.priceWeight);
     const paymentAmount = premiumNumberOverride(overrideKey, "paymentAmount", allocatedPaymentAmount || group.paymentAmount || 0);
-    const pricePerHead = reportPricePerHead || (paymentAmount && group.heads ? paymentAmount / group.heads : 0) || fallbackPricePerHead;
+    const pricePerHead = reportPricePerHead || (paymentAmount && group.heads ? paymentAmount / group.heads : 0);
     const grossPrincipal = roundMoney(group.heads * costPerHead);
-    const calculatedVpAtAbate = roundMoney(grossPrincipal * (1 + periodRate));
+    const validPeriod = Boolean(issueDate && periodEndDate >= issueDate && monthlyRate !== null);
+    const calculatedVpAtAbate = validPeriod ? roundMoney(grossPrincipal * (1 + periodRate)) : null;
     const systemVpAtAbate = roundMoney(group.systemVpAtAbate);
-    const vpDifference = systemVpAtAbate ? roundMoney(systemVpAtAbate - calculatedVpAtAbate) : 0;
-    const revenue = roundMoney(paymentAmount > 0 ? paymentAmount : group.heads * pricePerHead);
+    const vpDifference = systemVpAtAbate && validPeriod ? roundMoney(systemVpAtAbate - calculatedVpAtAbate) : null;
+    const revenue = roundMoney(hasManualPayment || hasAllocatedPayment || group.paymentAmount > 0 ? paymentAmount : group.heads * pricePerHead);
     const principal = roundMoney(-grossPrincipal);
-    const operationCost = roundMoney(-(calculatedVpAtAbate - grossPrincipal));
+    const operationCost = validPeriod ? roundMoney(-(calculatedVpAtAbate - grossPrincipal)) : null;
     const gta = roundMoney(-gtaCost);
     const tags = roundMoney(-group.heads * premiumState.tagCostPerHead);
-    const monitoringFee = roundMoney(-calculatedVpAtAbate * monitoringFeeRate);
-    const deathCost = roundMoney(-deaths * costPerHead * (1 + periodRate));
-    const premium = roundMoney(revenue + principal + operationCost + gta + tags + monitoringFee + deathCost);
+    const monitoringFee = validPeriod && (!feeEnabled || !missingFee) ? roundMoney(-calculatedVpAtAbate * monitoringFeeRate) : null;
+    const deathCost = deaths === null || !validPeriod ? null : roundMoney(-deaths * costPerHead * (1 + periodRate));
+    const pendingReasons = [];
+    if (!issueDate) pendingReasons.push(termDates.length > 1 ? "Datas do termo divergentes" : "Data do termo ausente");
+    if (issueDate && periodEndDate < issueDate) pendingReasons.push("Pagamento/saida anterior ao termo");
+    if (deaths === null) pendingReasons.push("Mortes nao informadas");
+    if (!costPerHead) pendingReasons.push("Aquisicao por cabeca ausente");
+    if (invalidAnimalValues) pendingReasons.push("Valor do animal invalido");
+    if (fallbackAcquisitionHeads > 0 && !(fallbackCostPerHead > 0)) pendingReasons.push("Aquisicao dos animais sem valor ausente ou invalida");
+    if (!revenue) pendingReasons.push("Valor pago ausente");
+    if (feeEnabled && missingFee) pendingReasons.push("Fee do parceiro nao cadastrado");
+    if (monthlyRate === null) pendingReasons.push("Taxa do termo ausente ou invalida");
+    if (group.rows.some((row) => row.hasAssignmentRate && row.assignmentRate === null)) pendingReasons.push("Taxa do termo invalida");
+    if (termRates.size > 1) pendingReasons.push("Taxas do termo divergentes");
+    if (!premiumState.paymentDate && reportPaymentDates.length > 1) pendingReasons.push("Datas de pagamento divergentes");
+    if (fallbackAcquisitionHeads > 0 && !hasManualAcquisition) {
+      if (acquisitionTotals.length > 1) pendingReasons.push("Aquisicoes totais divergentes no termo");
+      if (originalCounts.length > 1) pendingReasons.push("Quantidades originais divergentes no termo");
+      if (originalCounts.length && !validOriginalHeadCount) pendingReasons.push("Quantidade original invalida");
+    }
+    if (additionalDiscount > 0 && !discountNote.trim()) pendingReasons.push("Observacao do desconto ausente");
+    const discount = roundMoney(-additionalDiscount);
+    const premium = pendingReasons.length ? null : roundMoney(revenue + principal + operationCost + gta + tags + monitoringFee + deathCost + discount);
     const partnersLabel = Array.from(group.partners).filter(Boolean).join(", ");
+    const warnings = [];
+    const rateNotes = Array.from(new Set(group.rows.filter((row) => row.assignmentRateBasis.startsWith("annual")).map((row) =>
+      `${formatNumber(row.originalAssignmentRate * 100, 6)}% a.a.${row.assignmentRateBasis === "annual-inferred" ? " presumida" : ""} convertida para mensal`
+    )));
+    if (monthlyRate > 0.025) warnings.push("Taxa mensal acima de 2,50% apos validar a periodicidade");
     return {
       ...group,
       overrideKey,
-      displayTitle: group.title && group.title !== "-" ? group.title : defaults?.displayTitle || group.term,
+      displayTitle: group.title && group.title !== "-" ? group.title : group.term || defaults?.displayTitle || "-",
       issueDate,
+      validPeriod,
       paymentDate,
       paymentDatesLabel,
       periodEndDate,
@@ -1004,17 +974,24 @@ function premiumCalculatedRows() {
       periodRate,
       pricePerHead,
       costPerHead,
+      acquisitionTotal,
+      originalHeadCount,
+      originalHeadsFromReport: originalCounts.length > 0,
+      acquisitionBasis,
+      fallbackCostPerHead,
+      hasManualAcquisition,
+      reportAcquisitionHeads,
+      fallbackAcquisitionHeads,
+      warnings,
+      rateNotes,
       deaths,
       gtaCost,
       hasManualGta,
       hasManualPayment,
-      hasManualPaymentDate,
       hasAllocatedGta,
       hasAllocatedPayment,
-      hasAllocatedPaymentDate,
       allocatedGtaCost,
       allocatedPaymentAmount,
-      allocatedPaymentDate,
       allocationShare: Number(allocation?.share || 0),
       paymentAmount,
       revenue,
@@ -1023,24 +1000,33 @@ function premiumCalculatedRows() {
       gta,
       tags,
       monitoringFeeRate,
+      feeEnabled,
       monitoringFee,
       deathCost,
+      additionalDiscount,
+      discount,
+      discountNote,
+      pendingReasons,
       calculatedVpAtAbate,
       systemVpAtAbate,
       vpDifference,
       premium,
-      amortization: roundMoney(revenue - premium),
+      amortization: premium === null ? null : roundMoney(revenue - premium),
       partnersLabel,
       termsLabel: Array.from(group.terms).filter(Boolean).join(", "),
       lotsLabel: Array.from(group.lots).filter(Boolean).join(", "),
       lastrosLabel: Array.from(group.lastros).filter(Boolean).join(", "),
-      titlesLabel: Array.from(group.titles).filter(Boolean).join(", ")
+      titlesLabel: Array.from(group.titles).filter(Boolean).join(", "),
+      farmsLabel: Array.from(group.farms).filter(Boolean).join(", ")
     };
   });
 }
 
 function premiumTotals(rows) {
   return rows.reduce((total, row) => ({
+    pending: total.pending + (row.pendingReasons.length ? 1 : 0),
+    missingDeaths: total.missingDeaths + (row.deaths === null ? 1 : 0),
+    invalidPeriods: total.invalidPeriods + (row.validPeriod ? 0 : 1),
     heads: total.heads + row.heads,
     deaths: total.deaths + Number(row.deaths || 0),
     revenue: total.revenue + row.revenue,
@@ -1050,12 +1036,16 @@ function premiumTotals(rows) {
     tags: total.tags + row.tags,
     monitoringFee: total.monitoringFee + row.monitoringFee,
     deathCost: total.deathCost + row.deathCost,
+    discount: total.discount + row.discount,
     calculatedVpAtAbate: total.calculatedVpAtAbate + row.calculatedVpAtAbate,
     systemVpAtAbate: total.systemVpAtAbate + row.systemVpAtAbate,
     vpDifference: total.vpDifference + row.vpDifference,
     premium: total.premium + row.premium,
     amortization: total.amortization + row.amortization
   }), {
+    pending: 0,
+    missingDeaths: 0,
+    invalidPeriods: 0,
     heads: 0,
     deaths: 0,
     revenue: 0,
@@ -1065,6 +1055,7 @@ function premiumTotals(rows) {
     tags: 0,
     monitoringFee: 0,
     deathCost: 0,
+    discount: 0,
     calculatedVpAtAbate: 0,
     systemVpAtAbate: 0,
     vpDifference: 0,
@@ -1083,14 +1074,30 @@ function signedClass(value) {
 function premiumInputCell(row, field, value, step = "0.01", blankWhenZero = false) {
   const digits = step === "1" ? 0 : 2;
   const numericValue = Number(value || 0);
-  const inputValue = blankWhenZero && !numericValue ? "" : formatNumber(numericValue, digits);
-  const inputMode = digits ? "decimal" : "numeric";
-  const mask = digits ? "money" : "integer";
-  return `<input class="inline-number premium-row-input" data-premium-key="${escapeHtml(row.overrideKey)}" data-premium-field="${field}" data-premium-mask="${mask}" inputmode="${inputMode}" type="text" value="${inputValue}">`;
+  const inputValue = value === null || (blankWhenZero && !numericValue) ? "" : formatNumber(numericValue, digits);
+  const key = field === "costPerHead" ? `data-premium-term="${escapeHtml(row.key)}"` : `data-premium-key="${escapeHtml(row.overrideKey)}"`;
+  const acquisitionAttributes = field === "costPerHead" ? ' title="Aquisicao dos animais sem valor no relatorio. Limpe para restaurar o calculo."' : "";
+  return `<input class="inline-number premium-row-input" aria-label="${field === "costPerHead" ? "Aquisicao por cabeca sem valor no relatorio" : escapeHtml(field)}" ${key} data-premium-field="${field}" data-premium-mask="${digits ? "money" : "integer"}" inputmode="${digits ? "decimal" : "numeric"}" type="text" value="${inputValue}"${acquisitionAttributes}>`;
+}
+
+function maskPremiumNumberInput(input) {
+  const digitsOnly = String(input.value || "").replace(/\D/g, "");
+  if (!digitsOnly) { input.value = ""; return ""; }
+  const value = Number(digitsOnly) / (input.dataset.premiumMask === "money" ? 100 : 1);
+  if (!Number.isFinite(value)) { input.value = ""; return ""; }
+  input.value = formatNumber(value, input.dataset.premiumMask === "money" ? 2 : 0);
+  input.setSelectionRange(input.value.length, input.value.length);
+  return value;
 }
 
 function premiumDateInputCell(row, field, value) {
-  return `<input class="inline-date premium-row-input" data-premium-key="${escapeHtml(row.overrideKey)}" data-premium-field="${field}" type="date" value="${escapeHtml(value || "")}">`;
+  const key = field === "issueDate" ? `data-premium-term="${escapeHtml(row.key)}"` : `data-premium-key="${escapeHtml(row.overrideKey)}"`;
+  const disabled = field === "paymentDate" && premiumState.paymentDate ? " disabled" : "";
+  return `<input class="inline-date premium-row-input" aria-label="${escapeHtml(field)}" ${key} data-premium-field="${field}" type="date" value="${escapeHtml(value || "")}"${disabled}>`;
+}
+
+function premiumResultMoney(value) {
+  return value === null ? "Pendente" : formatCurrency(value, 2);
 }
 
 function premiumStatementLine(label, value, options = {}) {
@@ -1142,86 +1149,63 @@ function premiumStatementDateInputLine(row, label, field, value, note = "") {
   `;
 }
 
-function premiumInputNumberFromDigits(input) {
-  const digitsOnly = String(input.value || "").replace(/\D/g, "");
-  if (!digitsOnly) return "";
-  const number = Number(digitsOnly);
-  if (!Number.isFinite(number)) return "";
-  return input.dataset.premiumMask === "money" ? number / 100 : number;
+function premiumAcquisitionLine(row) {
+  if (!row.fallbackAcquisitionHeads) return premiumStatementLine("Aquisicao/cabeca", formatCurrency(row.costPerHead, 2), { className: "acquisition-per-head" });
+  const fallbackInput = premiumStatementInputLine(row, row.reportAcquisitionHeads ? `Aquis./cabeca sem valor (${formatNumber(row.fallbackAcquisitionHeads)} cab.)` : "Aquisicao/cabeca", "costPerHead", row.fallbackCostPerHead);
+  return row.reportAcquisitionHeads
+    ? premiumStatementLine("Aquisicao media/cabeca", formatCurrency(row.costPerHead, 2), { className: "acquisition-per-head" }) + fallbackInput
+    : `<div class="acquisition-per-head">${fallbackInput}</div>`;
 }
 
-function maskPremiumNumberInput(input) {
-  const nextValue = premiumInputNumberFromDigits(input);
-  if (nextValue === "") {
-    input.value = "";
-    return "";
-  }
-  const digits = input.dataset.premiumMask === "money" ? 2 : 0;
-  input.value = formatNumber(nextValue, digits);
-  input.setSelectionRange(input.value.length, input.value.length);
-  return nextValue;
-}
-
-function savePremiumRowInput(input) {
-  const rowKey = input.dataset.premiumKey;
-  const field = input.dataset.premiumField;
-  const nextValue = input.type === "date"
-    ? input.value
-    : input.value === ""
-      ? ""
-      : parsePtNumber(input.value);
-  premiumState.rowOverrides[rowKey] = {
-    ...(premiumState.rowOverrides[rowKey] || {})
-  };
-  if (nextValue === "") {
-    delete premiumState.rowOverrides[rowKey][field];
-  } else {
-    premiumState.rowOverrides[rowKey][field] = nextValue;
-  }
-  if (!Object.keys(premiumState.rowOverrides[rowKey]).length) delete premiumState.rowOverrides[rowKey];
+function premiumStatementAudit(row) {
+  return `<details class="statement-audit"><summary>Conferencia do termo</summary><div class="statement-lines">
+    ${premiumStatementLine("Lotes", escapeHtml(row.lotsLabel || "-"))}
+    ${premiumStatementLine("Lastros", escapeHtml(row.lastrosLabel || "-"))}
+    ${premiumStatementLine("Aquisicao total do termo", row.acquisitionTotal !== null ? formatCurrency(row.acquisitionTotal, 2) : "-")}
+    ${premiumStatementLine("Quantidade original do termo", row.originalHeadCount ? formatNumber(row.originalHeadCount) : "-")}
+    ${premiumStatementLine("Cabecas com valor no relatorio", formatNumber(row.reportAcquisitionHeads))}
+    ${premiumStatementLine("Cabecas com valor calculado/ajustado", formatNumber(row.fallbackAcquisitionHeads))}
+    ${row.rateNotes.length ? premiumStatementLine("Taxa informada", escapeHtml(row.rateNotes.join("; "))) : ""}
+    ${premiumStatementLine("VP calculado no pagamento", premiumResultMoney(row.calculatedVpAtAbate))}
+    ${premiumStatementLine("VP sistema no abate", row.systemVpAtAbate ? formatCurrency(row.systemVpAtAbate, 2) : "-")}
+    ${premiumStatementLine("Diferenca VP", row.systemVpAtAbate ? premiumResultMoney(row.vpDifference) : "-")}
+  </div></details>`;
 }
 
 function premiumStatement(row) {
-  const vpMatchClass = Math.abs(row.vpDifference || 0) <= 1 ? "positive" : signedClass(row.vpDifference);
-  const paymentNote = row.hasAllocatedPayment ? "rateado por cabecas" : "";
-  const paymentDateNote = row.hasAllocatedPaymentDate ? "aplicada pelo rateio" : "";
-  const gtaNote = row.hasAllocatedGta ? "rateado por cabecas" : "";
   return `
     <article class="premium-statement">
       <div class="premium-statement-head">
         <div>
           <strong>${escapeHtml(row.displayTitle)}</strong>
-          <span>Lotes ${escapeHtml(row.lotsLabel || "-")} · Lastros ${escapeHtml(row.lastrosLabel || "-")}</span>
         </div>
         <b>${formatNumber(row.heads)} cab.</b>
       </div>
       <div class="statement-meta">
-        <span>Parceiro ${escapeHtml(row.partnersLabel || "-")}</span>
-        <span>Termo/NF ${escapeHtml(row.termsLabel || row.term || "-")}</span>
-        <span>Data lote ${row.issueDate ? formatDate(row.issueDate) : "-"}</span>
-        <span>${formatNumber(row.days)} dias</span>
-        <span>${formatCurrency(row.pricePerHead, 2)}/cab.</span>
+        <strong>${escapeHtml(row.partnersLabel || "-")}</strong>
+        <span>${escapeHtml(row.farmsLabel)}</span>
       </div>
       <div class="statement-lines">
-        ${premiumStatementDateInputLine(row, "Data pagamento", "paymentDate", row.paymentDate, paymentDateNote)}
-        ${premiumStatementOptionalInputLine(row, "Valor pago", "paymentAmount", row.paymentAmount, "0.01", paymentNote, !row.hasManualPayment && !row.paymentAmount)}
-        ${premiumStatementOptionalInputLine(row, "Custo GTA", "gtaCost", row.gtaCost, "0.01", gtaNote, !row.hasManualGta && !row.gtaCost)}
-        ${premiumStatementLine("Receita total", formatCurrency(row.revenue, 2), { className: "is-result", valueClass: "positive" })}
-        ${premiumStatementLine("Valor aquis./cabeca", row.costPerHead ? formatCurrency(row.costPerHead, 2) : "-", { valueClass: row.costPerHead ? "" : "negative" })}
-        ${premiumStatementLine("Taxa de cessao", `${formatNumber(row.monthlyRate * 100, 4)}% a.m.`, { note: `ate ${row.periodEndLabel} em ${formatDate(row.periodEndDate)} · periodo ${formatNumber(row.periodRate * 100, 2)}%` })}
-        ${premiumStatementLine("Principal", formatCurrency(row.principal, 2), { valueClass: "negative", note: "quantidade x aquisicao/cabeca" })}
-        ${premiumStatementLine("Custo da operacao", formatCurrency(row.operationCost, 2), { valueClass: "negative" })}
-        ${premiumStatementLine("VP calculado no pagamento", formatCurrency(row.calculatedVpAtAbate, 2), { note: "principal atualizado pela taxa de cessao" })}
-        ${premiumStatementLine("VP sistema no abate", row.systemVpAtAbate ? formatCurrency(row.systemVpAtAbate, 2) : "-", { valueClass: row.systemVpAtAbate ? "" : "negative" })}
-        ${premiumStatementLine("Diferenca VP", row.systemVpAtAbate ? formatCurrency(row.vpDifference, 2) : "-", { className: "is-check", valueClass: row.systemVpAtAbate ? vpMatchClass : "negative" })}
-        ${premiumStatementOptionalInputLine(row, "Mortes", "deaths", row.deaths, "1", "", !row.deaths)}
-        ${premiumStatementLine("Custo mortes", formatCurrency(row.deathCost, 2), { valueClass: "negative" })}
-        ${premiumStatementLine("Brincos", formatCurrency(row.tags, 2), { valueClass: "negative", note: "R$ 2,50 fixo por cabeca" })}
-        ${premiumStatementLine("Fee monitoramento", formatCurrency(row.monitoringFee, 2), { valueClass: "negative", note: `${formatNumber(row.monitoringFeeRate * 100, 2)}% parceiro` })}
-        ${premiumStatementLine("Premio", formatCurrency(row.premium, 2), { className: "is-result", valueClass: signedClass(row.premium) })}
-        ${premiumStatementLine("Amortizacao", formatCurrency(row.amortization, 2), { className: "is-result" })}
+        ${premiumStatementLine("Data do termo de cessao", formatDate(row.issueDate), { className: "term-date" })}
+        ${premiumStatementLine("Data pagamento", row.paymentDate ? formatDate(row.paymentDate) : "-", { className: "payment-date" })}
+        ${premiumAcquisitionLine(row)}
+        ${premiumStatementLine("Taxa de cessao", row.monthlyRate === null ? "Pendente" : `${formatNumber(row.monthlyRate * 100, 4)}% a.m.`, { className: "assignment-rate" })}
+        ${premiumStatementOptionalInputLine(row, "Valor pago", "paymentAmount", row.revenue, "0.01", "", !row.hasManualPayment && !row.revenue)}
+        ${premiumStatementLine("Principal", formatCurrency(row.principal, 2), { valueClass: "negative" })}
+        ${premiumStatementLine(`Custo da operacao (${formatNumber(row.days)} dias)`, premiumResultMoney(row.operationCost), { valueClass: "negative" })}
+        ${premiumStatementOptionalInputLine(row, "Custo GTA", "gtaCost", row.gtaCost, "0.01", "", !row.hasManualGta && !row.gtaCost)}
+        ${premiumStatementInputLine(row, "Mortes", "deaths", row.deaths, "1")}
+        ${row.deaths ? premiumStatementLine("Custo mortes", premiumResultMoney(row.deathCost), { valueClass: "negative" }) : ""}
+        ${premiumStatementLine("Brincos", formatCurrency(row.tags, 2), { valueClass: "negative" })}
+        <label class="statement-line fee-toggle"><span>Aplicar fee</span><span><input type="checkbox" data-premium-term="${escapeHtml(row.key)}" data-premium-field="feeEnabled"${row.feeEnabled ? " checked" : ""}> ${row.feeEnabled ? "Sim" : "Nao"}</span></label>
+        ${premiumStatementLine(`Fee monitoramento (${formatNumber(row.monitoringFeeRate * 100, 2)}%)`, premiumResultMoney(row.monitoringFee), { valueClass: "negative" })}
+        ${premiumStatementOptionalInputLine(row, "Desconto adicional", "additionalDiscount", row.additionalDiscount, "0.01")}
+        ${row.additionalDiscount > 0 || row.discountNote ? `<label class="statement-line discount-note"><span>Observacao do desconto</span><textarea class="premium-row-input" data-premium-key="${escapeHtml(row.overrideKey)}" data-premium-field="discountNote" rows="2" maxlength="1000"${row.additionalDiscount > 0 ? " required" : ""}>${escapeHtml(row.discountNote)}</textarea><span class="discount-print-note">${escapeHtml(row.discountNote || "-")}</span></label>` : ""}
+        ${premiumStatementLine("Premio", premiumResultMoney(row.premium), { className: "is-result", valueClass: signedClass(row.premium) })}
+        ${premiumStatementLine("Amortizacao", premiumResultMoney(row.amortization), { className: "is-result" })}
       </div>
-      <div class="statement-foot">Composicao: lotes ${escapeHtml(row.lotsLabel || "-")}</div>
+      ${premiumStatementAudit(row)}
+      ${row.pendingReasons.length || row.warnings.length ? `<div class="statement-foot">${row.pendingReasons.length ? `Pendente: ${escapeHtml(row.pendingReasons.join("; "))}` : ""}${row.warnings.length ? `<p class="pricing-warning">${escapeHtml(row.warnings.join("; "))}</p>` : ""}</div>` : ""}
     </article>
   `;
 }
@@ -1232,53 +1216,59 @@ function premiumTotalStatement(totals) {
       <div class="premium-statement-head">
         <div>
           <strong>Total</strong>
-          <span>Consolidado da evidencia</span>
         </div>
         <b>${formatNumber(totals.heads)} cab.</b>
       </div>
       <div class="statement-lines">
         ${premiumStatementLine("Receita total", formatCurrency(totals.revenue, 2), { className: "is-result", valueClass: "positive" })}
         ${premiumStatementLine("Principal", formatCurrency(totals.principal, 2), { valueClass: "negative" })}
-        ${premiumStatementLine("Custo da operacao", formatCurrency(totals.operationCost, 2), { valueClass: "negative" })}
-        ${premiumStatementLine("VP calculado no pagamento", formatCurrency(totals.calculatedVpAtAbate, 2), {})}
-        ${premiumStatementLine("VP sistema no abate", totals.systemVpAtAbate ? formatCurrency(totals.systemVpAtAbate, 2) : "-", {})}
-        ${premiumStatementLine("Diferenca VP", totals.systemVpAtAbate ? formatCurrency(totals.vpDifference, 2) : "-", { className: "is-check", valueClass: totals.systemVpAtAbate ? signedClass(totals.vpDifference) : "negative" })}
-        ${premiumStatementLine("Mortes", formatNumber(totals.deaths), {})}
-        ${premiumStatementLine("Custo mortes", formatCurrency(totals.deathCost, 2), { valueClass: "negative" })}
+        ${premiumStatementLine("Custo da operacao", premiumResultMoney(totals.invalidPeriods ? null : totals.operationCost), { valueClass: "negative" })}
+        ${totals.deaths || totals.missingDeaths ? premiumStatementLine("Mortes", totals.missingDeaths ? "Pendente" : formatNumber(totals.deaths)) + premiumStatementLine("Custo mortes", premiumResultMoney(totals.invalidPeriods || totals.missingDeaths ? null : totals.deathCost), { valueClass: "negative" }) : ""}
         ${premiumStatementLine("GTA", formatCurrency(totals.gta, 2), { valueClass: "negative" })}
         ${premiumStatementLine("Brincos", formatCurrency(totals.tags, 2), { valueClass: "negative" })}
         ${premiumStatementLine("Fee monitoramento", formatCurrency(totals.monitoringFee, 2), { valueClass: "negative" })}
-        ${premiumStatementLine("Premio", formatCurrency(totals.premium, 2), { className: "is-result", valueClass: signedClass(totals.premium) })}
-        ${premiumStatementLine("Amortizacao", formatCurrency(totals.amortization, 2), { className: "is-result" })}
+        ${totals.discount ? premiumStatementLine("Descontos adicionais", formatCurrency(totals.discount, 2), { valueClass: "negative" }) : ""}
+        ${premiumStatementLine("Premio", premiumResultMoney(totals.pending ? null : totals.premium), { className: "is-result", valueClass: signedClass(totals.premium) })}
+        ${premiumStatementLine("Amortizacao", premiumResultMoney(totals.pending ? null : totals.amortization), { className: "is-result" })}
       </div>
     </article>
   `;
 }
 
-function premiumFarmSections(rows) {
-  const grouped = rows.reduce((acc, row) => {
-    const farm = row.farm || "Sem fazenda";
-    acc[farm] = acc[farm] || [];
-    acc[farm].push(row);
-    return acc;
-  }, {});
-  return Object.entries(grouped)
-    .sort(([a], [b]) => a.localeCompare(b, "pt-BR"))
-    .map(([farm, farmRows]) => {
-      const totals = premiumTotals(farmRows);
-      return `
-        <section class="premium-farm-group">
-          <div class="premium-farm-head">
-            <strong>${escapeHtml(farm)}</strong>
-            <span>${formatNumber(totals.heads)} cabecas · ${formatCurrency(totals.revenue, 2)} pagos · ${formatCurrency(totals.premium, 2)} premio</span>
-          </div>
-          <div class="premium-memory-grid">
-            ${farmRows.map(premiumStatement).join("")}
-          </div>
-        </section>
-      `;
-    })
-    .join("");
+function premiumTermSections(rows) {
+  const pairs = [];
+  for (let index = 0; index < rows.length; index += 2) pairs.push(`<div class="premium-term-pair">${rows.slice(index, index + 2).map(premiumStatement).join("")}</div>`);
+  return `<div class="premium-memory-grid">${pairs.join("")}</div>`;
+}
+
+function renderPremiumFees() {
+  if (!nodes.feeTable) return;
+  const names = new Map(PREMIUM_PARTNER_FEE_RATES.map(([name]) => [normalizeKey(name), name]));
+  premiumState.rows.forEach((row) => { if (row.partner) names.set(normalizeKey(row.partner), row.partner); });
+  Object.keys(premiumState.partnerFees).forEach((key) => { if (!names.has(key)) names.set(key, key); });
+  nodes.feeTable.innerHTML = Array.from(names).sort((a, b) => a[1].localeCompare(b[1], "pt-BR")).map(([key, name]) => {
+    const rate = premiumPartnerFeeRate(name);
+    return `<tr><td>${escapeHtml(name)}</td><td><input aria-label="Fee de ${escapeHtml(name)} (%)" data-fee-partner="${escapeHtml(key)}" type="number" min="0" max="100" step="0.01" value="${rate === null ? "" : (rate * 100).toFixed(2)}"></td></tr>`;
+  }).join("");
+}
+
+function premiumConfirmationCsv() {
+  const rows = premiumSelectedAnimalRows();
+  if (!rows.length) throw new Error("Sem animais na data selecionada.");
+  const seen = new Set();
+  const escapeCell = (value) => {
+    const text = String(value ?? "");
+    const safe = /^[=+@\-\t\r]/.test(text) ? `'${text}` : text;
+    return /[;"\r\n]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
+  };
+  const lines = rows.map((row) => {
+    if (row.headCount !== 1 || (!row.tagCeres && !row.sisbov)) throw new Error("Ha registros sem identificacao individual. Confira TAG/SISBOV antes de gerar a confirmacao.");
+    const id = row.sisbov || row.tagCeres;
+    if (seen.has(id)) throw new Error("Ha identificadores repetidos na data selecionada. Confira antes de gerar a confirmacao.");
+    seen.add(id);
+    return [row.tagCeres, row.sisbov, formatDate(row.abateDate), row.carcassWeight ? row.carcassWeight.toFixed(2).replace(".", ",") : ""].map(escapeCell).join(";");
+  });
+  return "tag_ceres;tag_sisbov;data_abate;peso_carcaca\r\n" + lines.join("\r\n") + "\r\n";
 }
 
 function renderPremiumFilters() {
@@ -1304,7 +1294,6 @@ function renderPremiumAllocation(rows) {
   }
 
   const totalHeads = rows.reduce((sum, row) => sum + Number(row.heads || 0), 0);
-  syncInput(nodes.allocationPaymentDateInput, premiumState.allocationPaymentDate);
   syncInput(nodes.allocationPaymentInput, premiumInputMoneyValue(premiumState.allocationPaymentAmount));
   syncInput(nodes.allocationGtaInput, premiumInputMoneyValue(premiumState.allocationGtaCost));
 
@@ -1331,6 +1320,7 @@ function renderPremium() {
   syncInput(nodes.monthlyRateInput, (premiumState.monthlyRate * 100).toFixed(2));
   syncInput(nodes.gtaInput, premiumState.gtaCost.toFixed(2));
   syncInput(nodes.monitoringFeeInput, (premiumState.monitoringFeeRate * 100).toFixed(2));
+  syncInput(nodes.paymentDateInput, premiumState.paymentDate);
 
   const rows = premiumCalculatedRows();
   const lotRows = premiumLotRows();
@@ -1338,49 +1328,51 @@ function renderPremium() {
   renderPremiumAllocation(rows);
   const sourceLabel = premiumState.fileName ? premiumState.fileName : "sem arquivo";
   const dateLabel = premiumState.selectedDate ? formatDate(premiumState.selectedDate) : "-";
-  const pricePerHead = totals.heads ? totals.revenue / totals.heads : rows[0]?.pricePerHead || 0;
-  const farmCount = new Set(rows.map((row) => row.farm).filter(Boolean)).size;
-  const abateDates = premiumDateOptions();
+  const farmCount = new Set(premiumSelectedAnimalRows().map((row) => row.farm).filter(Boolean)).size;
+  if (nodes.confirmationButton) nodes.confirmationButton.disabled = !premiumSelectedAnimalRows().length;
 
   nodes.status.textContent = premiumState.rows.length
-    ? abateDates.length
-      ? `${formatNumber(premiumState.rows.length)} registros carregados - ${sourceLabel}`
-      : `${formatNumber(premiumState.rows.length)} registros carregados, sem abatidos com data de confirmacao - ${sourceLabel}`
+    ? `${formatNumber(premiumState.rows.length)} registros carregados - ${sourceLabel}`
     : premiumState.fileName
       ? `Arquivo lido - nao encontrei a tabela de animais em ${sourceLabel}`
       : "Aguardando arquivo";
 
+  const dateWarning = document.getElementById("premium-date-warning");
+  if (dateWarning) {
+    const invalidDates = premiumState.rows.filter((row) =>
+      premiumRowIsAbated(row) && row.entryDate && premiumRowReferenceDate(row) < row.entryDate
+    );
+    const selectedInvalidDates = invalidDates.filter((row) => premiumRowReferenceDate(row) === premiumState.selectedDate);
+    dateWarning.hidden = !invalidDates.length;
+    dateWarning.textContent = invalidDates.length
+      ? `${formatNumber(invalidDates.length)} animais com saida real anterior a entrada; ${formatNumber(selectedInvalidDates.length)} na data selecionada. Datas do arquivo preservadas. Calculo sujeito a conferencia.`
+      : "";
+  }
+
   nodes.memorySubtitle.textContent = rows.length
     ? `Abate ${dateLabel} - ${formatNumber(farmCount)} fazenda${farmCount === 1 ? "" : "s"}`
-    : "Agrupado por fazenda e titulo";
+    : "Agrupado por termo";
 
-  const missingCosts = rows.filter((row) => !row.costPerHead).length;
-  const missingRevenue = rows.filter((row) => !row.paymentAmount).length;
-  const missingFee = rows.filter((row) => row.reportFeeRate === null || row.reportFeeRate === undefined).length;
-  const missingVp = rows.filter((row) => !row.systemVpAtAbate).length;
-  const missingPaymentDate = rows.filter((row) => !row.paymentDate).length;
-  const missingGta = rows.filter((row) => !row.hasManualGta && !row.hasAllocatedGta).length;
-  const missingInputs = missingCosts + missingRevenue + missingFee + missingVp + missingPaymentDate + missingGta;
   nodes.kpis.innerHTML = [
     ["Abate", dateLabel, `${formatNumber(farmCount)} fazenda${farmCount === 1 ? "" : "s"}`],
     ["Animais abatidos", formatNumber(totals.heads), `${formatNumber(rows.length)} titulo${rows.length === 1 ? "" : "s"}`],
-    ["Valor pago", formatCurrency(totals.revenue, 2), pricePerHead ? `${formatCurrency(pricePerHead, 2)}/cabeca` : "Por titulo"],
-    ["VP sistema", totals.systemVpAtAbate ? formatCurrency(totals.systemVpAtAbate, 2) : "-", "Campo de bate do relatorio"],
-    ["Dif. VP", totals.systemVpAtAbate ? formatCurrency(totals.vpDifference, 2) : "-", "Sistema menos motor"],
-    ["Premio", formatCurrency(totals.premium, 2), "Receita menos custos"],
-    ["Amortizacao", formatCurrency(totals.amortization, 2), "Receita menos premio"],
-    ["Pendencias", formatNumber(missingInputs), "Campos ausentes no relatorio"]
+    ["Valor pago", formatCurrency(totals.revenue, 2), ""],
+    ["VP sistema", totals.systemVpAtAbate ? formatCurrency(totals.systemVpAtAbate, 2) : "-", ""],
+    ["Dif. VP", totals.systemVpAtAbate ? premiumResultMoney(totals.vpDifference) : "-", ""],
+    ["Premio", premiumResultMoney(totals.pending ? null : totals.premium), totals.pending ? `${formatNumber(totals.pending)} termo(s) pendente(s)` : ""],
+    ["Amortizacao", premiumResultMoney(totals.pending ? null : totals.amortization), ""],
+    ["Pendencias", formatNumber(totals.pending), ""]
   ].map(([label, value, note]) => `
     <article class="premium-kpi">
       <span>${label}</span>
       <strong>${value}</strong>
-      <small>${note}</small>
+      ${note ? `<small>${note}</small>` : ""}
     </article>
   `).join("");
 
   nodes.memoryTable.innerHTML = rows.length
-    ? premiumFarmSections(rows) + premiumTotalStatement(totals)
-    : `<div class="premium-empty">${premiumState.rows.length ? "Sem animais abatidos com data de confirmacao no arquivo selecionado" : "Carregue o relatorio do sistema para calcular"}</div>`;
+    ? premiumTermSections(rows) + premiumTotalStatement(totals)
+    : `<div class="premium-empty">${premiumState.rows.length ? "Sem animais abatidos para os filtros selecionados" : "Carregue o relatorio do sistema para calcular"}</div>`;
 
   nodes.lotTable.innerHTML = lotRows.length ? lotRows.map((row) => {
     const average = row.heads ? row.carcassWeight / row.heads : 0;
@@ -1416,9 +1408,9 @@ nodes.fileInput.addEventListener("change", async (event) => {
     premiumState.rows = parsed.rows;
     premiumState.fileName = file.name;
     premiumState.rowOverrides = {};
+    premiumState.termSettings = {};
     premiumState.paymentDate = "";
     premiumState.paymentAmount = 0;
-    premiumState.allocationPaymentDate = "";
     premiumState.allocationPaymentAmount = 0;
     premiumState.allocationGtaCost = 0;
     premiumState.pricePerHead = 0;
@@ -1429,6 +1421,7 @@ nodes.fileInput.addEventListener("change", async (event) => {
     const dates = premiumDateOptions();
     premiumState.selectedDate = dates[0] || "";
     applyPremiumDateDefaultPrice();
+    renderPremiumFees();
     renderPremium();
   } catch (error) {
     nodes.status.textContent = error.message || "Nao foi possivel ler o arquivo";
@@ -1437,7 +1430,6 @@ nodes.fileInput.addEventListener("change", async (event) => {
 
 nodes.dateFilter.addEventListener("change", (event) => {
   premiumState.selectedDate = event.target.value;
-  premiumState.allocationPaymentDate = "";
   premiumState.allocationPaymentAmount = 0;
   premiumState.allocationGtaCost = 0;
   applyPremiumDateDefaultPrice();
@@ -1456,6 +1448,13 @@ if (nodes.priceHeadInput) {
   });
 }
 
+if (nodes.paymentDateInput) {
+  nodes.paymentDateInput.addEventListener("change", (event) => {
+    premiumState.paymentDate = event.target.value;
+    renderPremium();
+  });
+}
+
 [
   [nodes.monthlyRateInput, "monthlyRate", 100],
   [nodes.gtaInput, "gtaCost", 1],
@@ -1468,36 +1467,93 @@ if (nodes.priceHeadInput) {
   });
 });
 
-if (nodes.allocationPaymentDateInput) {
-  nodes.allocationPaymentDateInput.addEventListener("change", (event) => {
-    premiumState.allocationPaymentDate = event.target.value;
-    renderPremium();
-  });
-}
-
 [
   [nodes.allocationPaymentInput, "allocationPaymentAmount"],
   [nodes.allocationGtaInput, "allocationGtaCost"]
 ].filter(([node]) => node).forEach(([node, field]) => {
   node.addEventListener("input", (event) => {
-    const nextValue = maskPremiumNumberInput(event.target);
-    premiumState[field] = nextValue === "" ? 0 : nextValue;
+    premiumState[field] = maskPremiumNumberInput(event.target) || 0;
     renderPremium();
   });
 });
 
+nodes.memoryTable.addEventListener("input", (event) => {
+  const input = event.target.closest("[data-premium-field][data-premium-mask]");
+  if (input) maskPremiumNumberInput(input);
+});
+
 nodes.memoryTable.addEventListener("change", (event) => {
-  const input = event.target.closest("[data-premium-key][data-premium-field]");
+  const input = event.target.closest("[data-premium-field]");
   if (!input) return;
-  savePremiumRowInput(input);
+  if (!input.checkValidity()) { input.reportValidity(); return; }
+  const termKey = input.dataset.premiumTerm;
+  if (termKey) {
+    const field = input.dataset.premiumField;
+    if (!["feeEnabled", "costPerHead"].includes(field)) return;
+    premiumState.termSettings[termKey] = { ...(premiumState.termSettings[termKey] || {}) };
+    if (field === "costPerHead" && input.value === "") delete premiumState.termSettings[termKey][field];
+    else premiumState.termSettings[termKey][field] = field === "feeEnabled" ? input.checked : parsePtNumber(input.value);
+    renderPremium();
+    return;
+  }
+  const rowKey = input.dataset.premiumKey;
+  if (!rowKey) return;
+  const field = input.dataset.premiumField;
+  if (!["deaths", "paymentAmount", "gtaCost", "additionalDiscount", "discountNote"].includes(field)) return;
+  const nextValue = input.type === "date" || field === "discountNote"
+    ? input.value
+    : input.value === ""
+      ? ""
+      : parsePtNumber(input.value);
+  premiumState.rowOverrides[rowKey] = {
+    ...(premiumState.rowOverrides[rowKey] || {})
+  };
+  if (nextValue === "") {
+    delete premiumState.rowOverrides[rowKey][field];
+  } else {
+    premiumState.rowOverrides[rowKey][field] = nextValue;
+  }
+  if (!Object.keys(premiumState.rowOverrides[rowKey]).length) delete premiumState.rowOverrides[rowKey];
   renderPremium();
 });
 
-nodes.memoryTable.addEventListener("input", (event) => {
-  const input = event.target.closest("[data-premium-key][data-premium-field]");
-  if (!input || input.type === "date") return;
-  maskPremiumNumberInput(input);
-  savePremiumRowInput(input);
+if (nodes.feeButton) nodes.feeButton.addEventListener("click", () => {
+  renderPremiumFees();
+  nodes.feeDialog.showModal();
+});
+
+if (nodes.feeTable) nodes.feeTable.addEventListener("change", (event) => {
+  const input = event.target.closest("[data-fee-partner]");
+  if (!input) return;
+  if (!input.checkValidity()) { input.reportValidity(); return; }
+  const key = input.dataset.feePartner;
+  if (input.value === "") delete premiumState.partnerFees[key];
+  else premiumState.partnerFees[key] = Number(input.value) / 100;
+  try {
+    window.localStorage.setItem("ceres-premio-partner-fees-v1", JSON.stringify(premiumState.partnerFees));
+    nodes.feeStatus.textContent = "Taxas salvas neste navegador.";
+  } catch {
+    nodes.feeStatus.textContent = "Taxas alteradas somente nesta sessao; armazenamento indisponivel.";
+  }
+  renderPremiumFees();
+  renderPremium();
+});
+
+if (nodes.confirmationButton) nodes.confirmationButton.addEventListener("click", () => {
+  try {
+    const csv = premiumConfirmationCsv();
+    const url = URL.createObjectURL(new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `confirmacao_abate_${premiumState.selectedDate}.csv`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    nodes.confirmationStatus.textContent = `${formatNumber(premiumSelectedAnimalRows().length)} animais exportados.`;
+  } catch (error) {
+    nodes.confirmationStatus.textContent = error.message;
+  }
 });
 
 nodes.printButton.addEventListener("click", () => {
